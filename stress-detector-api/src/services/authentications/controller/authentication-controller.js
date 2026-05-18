@@ -3,7 +3,7 @@ import AuthenticationRepositories from '../repositories/authentication-repositor
 import UserRepositories from '../../users/repositories/user-repositories.js';
 import TokenManager from '../../../security/token-manager.js';
 import response from '../../../utils/response.js';
-import AuthenticationError from '../../../exceptions/index.js';
+import { AuthenticationError } from '../../../exceptions/index.js';
 
 export const login = async (req, res, next) => {
   const { email, password } = req.validated;

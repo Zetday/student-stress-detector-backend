@@ -3,7 +3,7 @@ import response from '../../../utils/response.js';
 import { InvariantError, NotFoundError } from '../../../exceptions/index.js';
 
 export const createUser = async (req, res, next) => {
-  const { email, password, fullname, role } = req.validated;
+  const { email, password, fullname } = req.validated;
 
   const isEmailExist = await UserRepositories.verifyNewEmail(email);
 
@@ -17,7 +17,6 @@ export const createUser = async (req, res, next) => {
     email,
     password,
     fullname,
-    role,
   });
 
   if (!user) {

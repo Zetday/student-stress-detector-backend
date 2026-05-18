@@ -16,17 +16,22 @@ export const up = (pgm) => {
       primaryKey: true,
     },
     fullname: {
-      type: 'VARCHAR(50)',
+      type: 'VARCHAR(100)',
       notNull: true,
     },
     email: {
-      type: 'VARCHAR(50)',
+      type: 'VARCHAR(254)',
       notNull: true,
       unique: true,
     },
     password: {
       type: 'TEXT',
       notNull: true,
+    },
+    role: {
+      type: 'VARCHAR(20)',
+      notNull: true,
+      default: "'student'",
     },
     profile_image: {
       type: 'TEXT',

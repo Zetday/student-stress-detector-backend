@@ -8,68 +8,68 @@ class ActivityRepositories {
 
   async createActivity({
     userId,
-    studyHours,
+    activityDate,
     sleepHours,
-    classAttendance,
-    examFrequency,
-    assignmentLoad,
-    socialActivity,
-    caffeineIntake,
-    physicalExercise,
-    socialMediaUsage,
-    screenTime,
-    familyIncomeLevel,
-    peerPresure,
-    familySupport,
-    anxietyLevel,
+    studyHours,
+    screenTimeHours,
+    socialMediaHours,
+    physicalActivityMinutes,
+    caffeineIntakeMg,
+    moodScore,
     fatigueLevel,
-    mood,
-    workHours,
-    exerciseMinutes,
-    date,
+    assignmentLoad,
+    deadlinePressure,
+    socialInteractionScore,
+    financialWorryScore,
+    healthConditionScore,
   }) {
     const id = nanoid(16);
     const createdAt = new Date().toISOString();
-    const updatedAt = new Date().toISOString();
 
     const query = {
-      text: 'INSERT INTO activities (id, user_id, study_hours, sleep_hours, class_attendance, exam_frequency, assignment_load, social_activity, caffeine_intake, physical_exercise, social_media_usage, screen_time, family_income_level, peer_presure, family_support, anxiety_level, fatigue_level, mood, work_hours, exercise_minutes, date, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23) RETURNING id',
+      text: `INSERT INTO daily_activities (
+               id, user_id, activity_date,
+               sleep_hours, study_hours, screen_time_hours, social_media_hours,
+               physical_activity_minutes, caffeine_intake_mg,
+               mood_score, fatigue_level, assignment_load, deadline_pressure,
+               social_interaction_score, financial_worry_score, health_condition_score,
+               created_at
+             ) VALUES (
+               $1, $2, $3, $4, $5, $6, $7, $8, $9,
+               $10, $11, $12, $13, $14, $15, $16, $17
+             ) RETURNING *`,
       values: [
         id,
         userId,
-        studyHours,
+        activityDate,
         sleepHours,
-        classAttendance,
-        examFrequency,
-        assignmentLoad,
-        socialActivity,
-        caffeineIntake,
-        physicalExercise,
-        socialMediaUsage,
-        screenTime,
-        familyIncomeLevel,
-        peerPresure,
-        familySupport,
-        anxietyLevel,
+        studyHours,
+        screenTimeHours,
+        socialMediaHours,
+        physicalActivityMinutes,
+        caffeineIntakeMg,
+        moodScore,
         fatigueLevel,
-        mood,
-        workHours,
-        exerciseMinutes,
-        date,
+        assignmentLoad,
+        deadlinePressure,
+        socialInteractionScore,
+        financialWorryScore,
+        healthConditionScore,
         createdAt,
-        updatedAt,
       ],
     };
 
     const result = await this.pool.query(query);
-
     return result.rows[0];
   }
 
-  async getActivitiesByUser(userId) {
+  async getActivitiesByUser(userId, { limit = 20, offset = 0 } = {}) {
     const query = {
-      text: 'SELECT * FROM activities WHERE user_id = $1',
-      values: [userId],
+      text: `SELECT * FROM daily_activities
+             WHERE user_id = $1
+             ORDER BY activity_date DESC
+             LIMIT $2 OFFSET $3`,
+      values: [userId, limit, offset],
     };
 
     const result = await this.pool.query(query);
@@ -78,49 +78,33 @@ class ActivityRepositories {
 
   async getActivityById(id) {
     const query = {
-      text: 'SELECT * FROM activities WHERE id = $1',
+      text: 'SELECT * FROM daily_activities WHERE id = $1',
       values: [id],
     };
 
     const result = await this.pool.query(query);
-    return result.rows[0];
+    return result.rows[0] || null;
   }
 
   async deleteActivity(id) {
     const query = {
-      text: 'DELETE FROM activities WHERE id = $1 RETURNING id',
+      text: 'DELETE FROM daily_activities WHERE id = $1 RETURNING id',
       values: [id],
     };
 
     const result = await this.pool.query(query);
-
-    return result.rows[0];
+    return result.rows[0] || null;
   }
 
   async verifyActivityOwner(id, userId) {
     const query = {
-      text: 'SELECT * FROM activities WHERE id = $1 AND user_id = $2',
+      text: 'SELECT id FROM daily_activities WHERE id = $1 AND user_id = $2',
       values: [id, userId],
     };
 
     const result = await this.pool.query(query);
-
-    if (!result.rows.length) {
-      return null;
-    }
-
-    return result.rows[0];
-  }
-
-  async verifyActivityAccess(activityId, userId) {
-    const ownerResult = await this.verifyActivityOwner(activityId, userId);
-
-    if (!ownerResult) {
-      return null;
-    }
-
-    return ownerResult;
+    return result.rows[0] || null;
   }
 }
 
-export default ActivityRepositories;
+export default new ActivityRepositories();

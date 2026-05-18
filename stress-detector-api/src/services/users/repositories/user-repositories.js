@@ -9,15 +9,17 @@ class UserRepositories {
     this.cacheService = new CacheService();
   }
 
-  async createUser({ fullname, email, password, role }) {
+  async createUser({ fullname, email, password }) {
     const id = nanoid(16);
     const hashedPassword = await bcrypt.hash(password, 10);
     const createdAt = new Date().toISOString();
     const updatedAt = createdAt;
 
     const query = {
-      text: 'INSERT INTO users VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id',
-      values: [id, fullname, email, hashedPassword, role, createdAt, updatedAt],
+      text: `INSERT INTO users (id, fullname, email, password, role, created_at, updated_at)
+             VALUES ($1, $2, $3, $4, 'student', $5, $6)
+             RETURNING id`,
+      values: [id, fullname, email, hashedPassword, createdAt, updatedAt],
     };
 
     const result = await this.pool.query(query);
