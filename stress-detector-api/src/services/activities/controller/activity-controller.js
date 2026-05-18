@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import response from '../../../utils/response.js';
 import {
   AuthorizationError,
@@ -5,6 +6,8 @@ import {
   NotFoundError,
 } from '../../../exceptions/index.js';
 import ActivityRepositories from '../repositories/activity-repositories.js';
+import PredictionRepositories from '../../predictions/repositories/prediction-repositories.js';
+import { predictStress } from '../../../ai/ml-client.js';
 
 export const createActivity = async (req, res, next) => {
   const {
@@ -27,6 +30,7 @@ export const createActivity = async (req, res, next) => {
   // Fixed: was req.user.userId (always undefined). JWT payload uses { id }.
   const { id: userId } = req.user;
 
+  // 1. Save activity to DB
   const activity = await ActivityRepositories.createActivity({
     userId,
     activityDate,
@@ -49,7 +53,44 @@ export const createActivity = async (req, res, next) => {
     return next(new InvariantError('Gagal menambahkan aktivitas'));
   }
 
-  return response(res, 201, 'Aktivitas berhasil ditambahkan', { activity });
+  // 2. Call ML service for stress prediction (non-blocking — failure is tolerated)
+  const mlPayload = {
+    sleep_hours: sleepHours,
+    study_hours: studyHours,
+    screen_time_hours: screenTimeHours,
+    social_media_hours: socialMediaHours,
+    physical_activity_minutes: physicalActivityMinutes,
+    caffeine_intake_mg: caffeineIntakeMg,
+    mood_score: moodScore,
+    fatigue_level: fatigueLevel,
+    assignment_load: assignmentLoad,
+    deadline_pressure: deadlinePressure,
+    social_interaction_score: socialInteractionScore,
+    financial_worry_score: financialWorryScore,
+    health_condition_score: healthConditionScore,
+  };
+
+  const mlResult = await predictStress(mlPayload);
+
+  // 3. Save prediction if ML returned a result
+  let prediction = null;
+  if (mlResult && mlResult.stress_level && mlResult.stress_score !== undefined) {
+    prediction = await PredictionRepositories.savePrediction({
+      userId,
+      activityId: activity.id,
+      predictionDate: activityDate,
+      stressLevel: mlResult.stress_level,
+      stressScore: mlResult.stress_score,
+      confidenceScore: mlResult.confidence_score || null,
+      modelVersion: mlResult.model_version || null,
+    });
+  }
+
+  return response(res, 201, 'Aktivitas berhasil ditambahkan', {
+    activity,
+    prediction,
+    mlAvailable: mlResult !== null,
+  });
 };
 
 export const getActivities = async (req, res) => {

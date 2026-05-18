@@ -24,18 +24,33 @@ export const up = (pgm) => {
       notNull: false,
     },
     period_type: {
-      type: 'VARCHAR(50)',
+      type: 'VARCHAR(20)',
       notNull: true,
+    },
+    category: {
+      type: 'VARCHAR(50)',
+      notNull: false,
     },
     recommendation_text: {
       type: 'TEXT',
       notNull: true,
+    },
+    is_read: {
+      type: 'BOOLEAN',
+      notNull: true,
+      default: false,
     },
     created_at: {
       type: 'TIMESTAMPTZ',
       notNull: true,
     },
   });
+
+  pgm.addConstraint(
+    'recommendations',
+    'chk_recommendations.period_type',
+    "CHECK (period_type IN ('daily', 'weekly'))",
+  );
 
   pgm.addConstraint(
     'recommendations',

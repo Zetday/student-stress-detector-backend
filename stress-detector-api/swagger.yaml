@@ -1,26 +1,156 @@
 openapi: 3.0.0
 info:
   title: CekTenang API (Stress Detector)
-  description: API documentation for the CekTenang Student Stress Detector application.
+  description: |
+    REST API for the CekTenang Student Stress Detector application.
+    
+    **Flow:**
+    1. Register → Login → get `accessToken`
+    2. `POST /activities` → triggers ML prediction automatically
+    3. `GET /predictions/latest` → view today's stress level
+    4. `POST /weekly-summaries/generate` → aggregate the week + get AI insight
+    5. `GET /dashboard` → aggregated view for the frontend dashboard
+    
+    **Auth:** All protected endpoints require `Authorization: Bearer <accessToken>`
   version: 1.0.0
 servers:
   - url: http://localhost:5000
     description: Local development server
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+  schemas:
+    Activity:
+      type: object
+      properties:
+        id: { type: string }
+        user_id: { type: string }
+        activity_date: { type: string, format: date }
+        sleep_hours: { type: number }
+        study_hours: { type: number }
+        screen_time_hours: { type: number }
+        social_media_hours: { type: number }
+        physical_activity_minutes: { type: integer }
+        caffeine_intake_mg: { type: integer }
+        mood_score: { type: integer }
+        fatigue_level: { type: integer }
+        assignment_load: { type: integer }
+        deadline_pressure: { type: integer }
+        social_interaction_score: { type: integer }
+        financial_worry_score: { type: integer }
+        health_condition_score: { type: integer }
+        created_at: { type: string, format: date-time }
+
+    Prediction:
+      type: object
+      properties:
+        id: { type: string }
+        user_id: { type: string }
+        activity_id: { type: string }
+        prediction_date: { type: string, format: date }
+        stress_level:
+          type: string
+          enum: [low, moderate, high]
+        stress_score: { type: number }
+        confidence_score: { type: number }
+        model_version: { type: string }
+        created_at: { type: string, format: date-time }
+
+    WeeklySummary:
+      type: object
+      properties:
+        id: { type: string }
+        user_id: { type: string }
+        week_start: { type: string, format: date }
+        week_end: { type: string, format: date }
+        average_stress_level: { type: number }
+        average_sleep_hours: { type: number }
+        average_screen_time_hours: { type: number }
+        average_study_hours: { type: number }
+        stress_trend:
+          type: string
+          enum: [improving, worsening, stable]
+        created_at: { type: string, format: date-time }
+
+    Insight:
+      type: object
+      properties:
+        id: { type: string }
+        user_id: { type: string }
+        weekly_summary_id: { type: string }
+        period_type:
+          type: string
+          enum: [daily, weekly]
+        insight_text: { type: string }
+        created_at: { type: string, format: date-time }
+
+    Recommendation:
+      type: object
+      properties:
+        id: { type: string }
+        user_id: { type: string }
+        weekly_summary_id: { type: string }
+        period_type:
+          type: string
+          enum: [daily, weekly]
+        category: { type: string }
+        recommendation_text: { type: string }
+        is_read: { type: boolean }
+        created_at: { type: string, format: date-time }
+
+    Pagination:
+      type: object
+      properties:
+        limit: { type: integer }
+        offset: { type: integer }
+
+    SuccessResponse:
+      type: object
+      properties:
+        status: { type: string, example: success }
+        message: { type: string }
+        data: { type: object }
+
+    ErrorResponse:
+      type: object
+      properties:
+        status: { type: string, example: fail }
+        message: { type: string }
+
 security:
   - bearerAuth: []
 
+tags:
+  - name: Users
+    description: Registration and user lookup
+  - name: Authentications
+    description: Login, token refresh, and logout
+  - name: Profiles
+    description: User profile management
+  - name: Activities
+    description: Daily activity submission and history
+  - name: Predictions
+    description: AI stress prediction results
+  - name: Weekly Summaries
+    description: Weekly aggregation and AI insight generation
+  - name: Insights
+    description: AI-generated weekly insights
+  - name: Recommendations
+    description: AI-generated personalized recommendations
+  - name: Dashboard
+    description: Aggregated data for the dashboard view
+
 paths:
+  # ─── USERS ────────────────────────────────────────────────────────────────
   /users:
     post:
-      summary: Register a new user
-      tags:
-        - Users
+      summary: Register a new student account
+      tags: [Users]
       security: []
       requestBody:
         required: true
@@ -28,57 +158,65 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - fullname
-                - email
-                - password
+              required: [fullname, email, password]
               properties:
                 fullname:
                   type: string
+                  example: Muhammad Rendy
                 email:
                   type: string
+                  example: rendy@example.com
                 password:
                   type: string
                   format: password
+                  minLength: 6
       responses:
         '201':
           description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
         '400':
-          description: Validation error or email exists
+          description: Validation error or email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
     get:
-      summary: Get users by email
-      tags:
-        - Users
+      summary: Search users by email
+      tags: [Users]
+      security: []
       parameters:
         - in: query
           name: email
-          required: false
-          schema:
-            type: string
+          schema: { type: string }
       responses:
         '200':
-          description: Successfully retrieved users
-  
+          description: Users retrieved
+
   /users/{id}:
     get:
-      summary: Get a user by ID
-      tags:
-        - Users
+      summary: Get user by ID
+      tags: [Users]
+      security: []
       parameters:
         - in: path
           name: id
           required: true
-          schema:
-            type: string
+          schema: { type: string }
       responses:
         '200':
-          description: Successfully retrieved user
+          description: User retrieved
+        '404':
+          description: User not found
 
+  # ─── AUTHENTICATIONS ──────────────────────────────────────────────────────
   /authentications:
     post:
       summary: Login
-      tags:
-        - Authentications
+      tags: [Authentications]
       security: []
       requestBody:
         required: true
@@ -86,22 +224,35 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - email
-                - password
+              required: [email, password]
               properties:
                 email:
                   type: string
+                  example: rendy@example.com
                 password:
                   type: string
                   format: password
       responses:
-        '201':
-          description: Login successful, returns tokens
+        '200':
+          description: Login successful — returns access and refresh tokens
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          accessToken: { type: string }
+                          refreshToken: { type: string }
+        '401':
+          description: Invalid credentials
+
     put:
-      summary: Refresh Access Token
-      tags:
-        - Authentications
+      summary: Refresh access token
+      tags: [Authentications]
       security: []
       requestBody:
         required: true
@@ -109,18 +260,18 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - refreshToken
+              required: [refreshToken]
               properties:
-                refreshToken:
-                  type: string
+                refreshToken: { type: string }
       responses:
         '200':
-          description: Token refreshed successfully
+          description: New access and refresh tokens returned
+        '401':
+          description: Invalid refresh token
+
     delete:
-      summary: Logout
-      tags:
-        - Authentications
+      summary: Logout (invalidate refresh token)
+      tags: [Authentications]
       security: []
       requestBody:
         required: true
@@ -128,74 +279,61 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - refreshToken
+              required: [refreshToken]
               properties:
-                refreshToken:
-                  type: string
+                refreshToken: { type: string }
       responses:
         '200':
           description: Logged out successfully
 
+  # ─── PROFILES ─────────────────────────────────────────────────────────────
   /profiles/me:
     get:
       summary: Get current user profile
-      tags:
-        - Profiles
+      tags: [Profiles]
       responses:
         '200':
-          description: Profile retrieved successfully
+          description: Profile retrieved
 
   /profiles/info:
     put:
-      summary: Update profile info
-      tags:
-        - Profiles
+      summary: Update profile info (fullname)
+      tags: [Profiles]
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - fullname
+              required: [fullname]
               properties:
-                fullname:
-                  type: string
+                fullname: { type: string }
       responses:
         '200':
-          description: Profile updated successfully
+          description: Profile updated
 
   /profiles/password:
     put:
       summary: Update password
-      tags:
-        - Profiles
+      tags: [Profiles]
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - oldPassword
-                - newPassword
+              required: [oldPassword, newPassword]
               properties:
-                oldPassword:
-                  type: string
-                  format: password
-                newPassword:
-                  type: string
-                  format: password
+                oldPassword: { type: string, format: password }
+                newPassword: { type: string, format: password, minLength: 6 }
       responses:
         '200':
-          description: Password updated successfully
+          description: Password updated
 
   /profiles/picture:
     put:
       summary: Upload profile picture
-      tags:
-        - Profiles
+      tags: [Profiles]
       requestBody:
         required: true
         content:
@@ -208,107 +346,362 @@ paths:
                   format: binary
       responses:
         '200':
-          description: Profile picture uploaded successfully
+          description: Profile picture uploaded
 
+  # ─── ACTIVITIES ───────────────────────────────────────────────────────────
   /activities:
     post:
-      summary: Submit a new daily activity
-      tags:
-        - Activities
+      summary: Submit daily activity (auto-triggers ML prediction)
+      tags: [Activities]
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - activityDate
+                - sleepHours
+                - studyHours
+                - screenTimeHours
+                - socialMediaHours
+                - physicalActivityMinutes
+                - caffeineIntakeMg
+                - moodScore
+                - fatigueLevel
+                - assignmentLoad
+                - deadlinePressure
+                - socialInteractionScore
+                - financialWorryScore
+                - healthConditionScore
               properties:
-                activityDate:
-                  type: string
-                  format: date
-                sleepHours:
-                  type: number
-                studyHours:
-                  type: number
-                screenTimeHours:
-                  type: number
-                socialMediaHours:
-                  type: number
-                physicalActivityMinutes:
-                  type: integer
-                caffeineIntakeMg:
-                  type: integer
-                moodScore:
-                  type: integer
-                  minimum: 1
-                  maximum: 10
-                fatigueLevel:
-                  type: integer
-                  minimum: 1
-                  maximum: 10
-                assignmentLoad:
-                  type: integer
-                deadlinePressure:
-                  type: integer
-                  minimum: 1
-                  maximum: 10
-                socialInteractionScore:
-                  type: integer
-                  minimum: 1
-                  maximum: 10
-                financialWorryScore:
-                  type: integer
-                  minimum: 1
-                  maximum: 10
-                healthConditionScore:
-                  type: integer
-                  minimum: 1
-                  maximum: 10
+                activityDate: { type: string, format: date, example: '2026-05-18' }
+                sleepHours: { type: number, minimum: 0, maximum: 24, example: 7 }
+                studyHours: { type: number, minimum: 0, maximum: 24, example: 6 }
+                screenTimeHours: { type: number, minimum: 0, maximum: 24, example: 4 }
+                socialMediaHours: { type: number, minimum: 0, maximum: 24, example: 2 }
+                physicalActivityMinutes: { type: integer, minimum: 0, example: 30 }
+                caffeineIntakeMg: { type: integer, minimum: 0, example: 200 }
+                moodScore: { type: integer, minimum: 1, maximum: 10, example: 6 }
+                fatigueLevel: { type: integer, minimum: 1, maximum: 10, example: 5 }
+                assignmentLoad: { type: integer, minimum: 0, example: 3 }
+                deadlinePressure: { type: integer, minimum: 1, maximum: 10, example: 7 }
+                socialInteractionScore: { type: integer, minimum: 1, maximum: 10, example: 5 }
+                financialWorryScore: { type: integer, minimum: 1, maximum: 10, example: 4 }
+                healthConditionScore: { type: integer, minimum: 1, maximum: 10, example: 8 }
       responses:
         '201':
-          description: Activity created successfully
+          description: Activity saved. `prediction` is null if ML service is unavailable.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          activity:
+                            $ref: '#/components/schemas/Activity'
+                          prediction:
+                            $ref: '#/components/schemas/Prediction'
+                          mlAvailable: { type: boolean }
+
     get:
-      summary: Get own activities
-      tags:
-        - Activities
+      summary: List own activities (paginated)
+      tags: [Activities]
       parameters:
         - in: query
           name: limit
-          schema:
-            type: integer
-            default: 20
+          schema: { type: integer, default: 20 }
         - in: query
           name: offset
-          schema:
-            type: integer
-            default: 0
+          schema: { type: integer, default: 0 }
       responses:
         '200':
-          description: Retrieved activities successfully
+          description: Activities retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          activities:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Activity'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
 
   /activities/{id}:
     get:
       summary: Get a specific activity
-      tags:
-        - Activities
+      tags: [Activities]
       parameters:
         - in: path
           name: id
           required: true
-          schema:
-            type: string
+          schema: { type: string }
       responses:
         '200':
-          description: Retrieved activity successfully
+          description: Activity retrieved
+        '403':
+          description: Not the owner
+        '404':
+          description: Activity not found
+
     delete:
       summary: Delete an activity
-      tags:
-        - Activities
+      tags: [Activities]
       parameters:
         - in: path
           name: id
           required: true
-          schema:
-            type: string
+          schema: { type: string }
       responses:
         '200':
-          description: Deleted activity successfully
+          description: Activity deleted
+        '403':
+          description: Not the owner
+        '404':
+          description: Activity not found
+
+  # ─── PREDICTIONS ──────────────────────────────────────────────────────────
+  /predictions:
+    get:
+      summary: List stress prediction history (paginated)
+      tags: [Predictions]
+      parameters:
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20 }
+        - in: query
+          name: offset
+          schema: { type: integer, default: 0 }
+      responses:
+        '200':
+          description: Predictions retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          predictions:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Prediction'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
+
+  /predictions/latest:
+    get:
+      summary: Get the most recent prediction
+      tags: [Predictions]
+      responses:
+        '200':
+          description: Latest prediction retrieved (null if none exists)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          prediction:
+                            $ref: '#/components/schemas/Prediction'
+
+  # ─── WEEKLY SUMMARIES ─────────────────────────────────────────────────────
+  /weekly-summaries:
+    get:
+      summary: List weekly summaries (paginated)
+      tags: [Weekly Summaries]
+      parameters:
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: offset
+          schema: { type: integer, default: 0 }
+      responses:
+        '200':
+          description: Weekly summaries retrieved
+
+  /weekly-summaries/latest:
+    get:
+      summary: Get the most recent weekly summary
+      tags: [Weekly Summaries]
+      responses:
+        '200':
+          description: Latest weekly summary retrieved
+
+  /weekly-summaries/generate:
+    post:
+      summary: >
+        Generate this week's summary + AI insight + recommendation.
+        Aggregates daily_activities & stress_predictions for the current ISO week,
+        calls the ML service, and saves the result.
+      tags: [Weekly Summaries]
+      responses:
+        '201':
+          description: Weekly summary generated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          summary:
+                            $ref: '#/components/schemas/WeeklySummary'
+                          insight:
+                            $ref: '#/components/schemas/Insight'
+                          recommendation:
+                            $ref: '#/components/schemas/Recommendation'
+                          mlAvailable: { type: boolean }
+        '400':
+          description: No activity data found for this week
+
+  # ─── INSIGHTS ─────────────────────────────────────────────────────────────
+  /insights:
+    get:
+      summary: List AI-generated insights (paginated)
+      tags: [Insights]
+      parameters:
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: offset
+          schema: { type: integer, default: 0 }
+      responses:
+        '200':
+          description: Insights retrieved
+
+  /insights/latest:
+    get:
+      summary: Get the most recent insight
+      tags: [Insights]
+      responses:
+        '200':
+          description: Latest insight retrieved
+
+  # ─── RECOMMENDATIONS ──────────────────────────────────────────────────────
+  /recommendations:
+    get:
+      summary: List recommendations (paginated)
+      tags: [Recommendations]
+      parameters:
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: offset
+          schema: { type: integer, default: 0 }
+      responses:
+        '200':
+          description: Recommendations retrieved
+
+  /recommendations/latest:
+    get:
+      summary: Get the most recent recommendation
+      tags: [Recommendations]
+      responses:
+        '200':
+          description: Latest recommendation retrieved
+
+  /recommendations/{id}/read:
+    patch:
+      summary: Mark a recommendation as read
+      tags: [Recommendations]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Recommendation marked as read
+        '404':
+          description: Recommendation not found
+
+  # ─── DASHBOARD ────────────────────────────────────────────────────────────
+  /dashboard:
+    get:
+      summary: >
+        Get aggregated dashboard data in one request:
+        latest prediction, weekly summary, insight, recommendation, and unread count.
+      tags: [Dashboard]
+      responses:
+        '200':
+          description: Dashboard data retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          latestPrediction:
+                            $ref: '#/components/schemas/Prediction'
+                          latestWeeklySummary:
+                            $ref: '#/components/schemas/WeeklySummary'
+                          latestInsight:
+                            $ref: '#/components/schemas/Insight'
+                          latestRecommendation:
+                            $ref: '#/components/schemas/Recommendation'
+                          unreadRecommendations:
+                            type: integer
+                            example: 3
+
+  /dashboard/trend:
+    get:
+      summary: Get stress score time-series for chart visualization
+      tags: [Dashboard]
+      parameters:
+        - in: query
+          name: days
+          description: Number of past days to include (default 30)
+          schema: { type: integer, default: 30 }
+      responses:
+        '200':
+          description: Stress trend data retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          trend:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                prediction_date: { type: string, format: date }
+                                stress_score: { type: number }
+                                stress_level:
+                                  type: string
+                                  enum: [low, moderate, high]
+                          days: { type: integer }

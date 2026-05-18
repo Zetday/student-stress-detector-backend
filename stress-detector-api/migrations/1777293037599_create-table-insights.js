@@ -24,7 +24,7 @@ export const up = (pgm) => {
       notNull: false,
     },
     period_type: {
-      type: 'VARCHAR(50)',
+      type: 'VARCHAR(20)',
       notNull: true,
     },
     insight_text: {
@@ -36,6 +36,12 @@ export const up = (pgm) => {
       notNull: true,
     },
   });
+
+  pgm.addConstraint(
+    'insights',
+    'chk_insights.period_type',
+    "CHECK (period_type IN ('daily', 'weekly'))",
+  );
 
   pgm.addConstraint(
     'insights',
