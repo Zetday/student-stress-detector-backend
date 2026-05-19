@@ -144,6 +144,8 @@ tags:
     description: AI-generated personalized recommendations
   - name: Dashboard
     description: Aggregated data for the dashboard view
+  - name: Exports
+    description: Queueing daily stress prediction and weekly summary emails
 
 paths:
   # ─── USERS ────────────────────────────────────────────────────────────────
@@ -705,3 +707,58 @@ paths:
                                   type: string
                                   enum: [low, moderate, high]
                           days: { type: integer }
+
+  # ─── EXPORTS ──────────────────────────────────────────────────────────────
+  /exports/daily-prediction:
+    post:
+      summary: Send daily stress prediction analysis to email via RabbitMQ
+      tags: [Exports]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                targetEmail:
+                  type: string
+                  format: email
+                  example: student@example.com
+                  description: Optional target email. Defaults to user's registered email.
+      responses:
+        '201':
+          description: Export task successfully queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+
+  /exports/weekly-summary:
+    post:
+      summary: Send weekly mental health summary and AI recommendations to email via RabbitMQ
+      tags: [Exports]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                targetEmail:
+                  type: string
+                  format: email
+                  example: student@example.com
+                  description: Optional target email. Defaults to user's registered email.
+      responses:
+        '201':
+          description: Export task successfully queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found

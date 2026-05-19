@@ -98,7 +98,8 @@ export const uploadProfilePicture = async (req, res, next) => {
       .resize(500, 500, { fit: 'cover', withoutEnlargement: true })
       .webp({ quality: 80 })
       .toFile(filePath);
-  } catch {
+  } catch (err) {
+    console.error('[Sharp Error Detail]:', err);
     return next(new InvariantError('Gagal memproses gambar'));
   }
 

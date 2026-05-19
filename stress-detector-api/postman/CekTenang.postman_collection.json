@@ -37,6 +37,16 @@
                 ],
                 "type": "text/javascript"
               }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const randomEmail = 'user' + Date.now() + '@example.com';",
+                  "pm.environment.set('test_email', randomEmail);"
+                ]
+              }
             }
           ],
           "request": {
@@ -44,7 +54,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"fullname\": \"John Doe\",\n    \"email\": \"johndoe@example.com\",\n    \"password\": \"password123\",\n    \"role\": \"user\"\n}",
+              "raw": "{\n  \"fullname\": \"Test Student\",\n  \"email\": \"{{test_email}}\",\n  \"password\": \"{{test_password}}\",\n  \"role\": \"user\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -53,8 +63,15 @@
             },
             "url": {
               "raw": "{{base_url}}/users",
-              "host": ["{{base_url}}"],
-              "path": ["users"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         },
@@ -83,7 +100,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"fullname\": \"Jane Doe\",\n    \"email\": \"johndoe@example.com\",\n    \"password\": \"password123\",\n    \"role\": \"user\"\n}",
+              "raw": "{\n  \"fullname\": \"Jane Doe\",\n  \"email\": \"{{test_email}}\",\n  \"password\": \"password123\",\n  \"role\": \"user\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -92,8 +109,15 @@
             },
             "url": {
               "raw": "{{base_url}}/users",
-              "host": ["{{base_url}}"],
-              "path": ["users"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         },
@@ -122,8 +146,16 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/users/{{user_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["users", "{{user_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_id}}"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         },
@@ -152,14 +184,21 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/users?email=johndoe@example.com",
-              "host": ["{{base_url}}"],
-              "path": ["users"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ],
               "query": [
                 {
                   "key": "email",
                   "value": "johndoe@example.com"
                 }
               ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         }
@@ -197,7 +236,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\": \"johndoe@example.com\",\n    \"password\": \"password123\"\n}",
+              "raw": "{\n    \"email\": \"{{test_email}}\",\n    \"password\": \"{{test_password}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -206,8 +245,15 @@
             },
             "url": {
               "raw": "{{base_url}}/authentications",
-              "host": ["{{base_url}}"],
-              "path": ["authentications"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "authentications"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         },
@@ -245,8 +291,15 @@
             },
             "url": {
               "raw": "{{base_url}}/authentications",
-              "host": ["{{base_url}}"],
-              "path": ["authentications"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "authentications"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         },
@@ -288,8 +341,903 @@
             },
             "url": {
               "raw": "{{base_url}}/authentications",
-              "host": ["{{base_url}}"],
-              "path": ["authentications"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "authentications"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains user data\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/profiles/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profiles",
+                "me"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get My Profile - Unauthorized (Negative)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 401\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/profiles/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profiles",
+                "me"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Update Info",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const randomEmail = 'updated' + Date.now() + '@example.com';",
+                  "pm.environment.set('test_email_updated', randomEmail);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullname\": \"John Doe Updated\",\n  \"email\": \"{{test_email_updated}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/profiles/info",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profiles",
+                "info"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"oldPassword\": \"password123\",\n    \"newPassword\": \"newpassword123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/profiles/password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profiles",
+                "password"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upload Picture",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "profilePicture",
+                  "type": "file",
+                  "src": "test-picture/dummy.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/profiles/picture",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profiles",
+                "picture"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Activities",
+      "item": [
+        {
+          "name": "Submit Activity",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Extract activity_id\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.activity && jsonData.data.activity.id) {",
+                  "        pm.environment.set(\"activity_id\", jsonData.data.activity.id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const d = new Date();",
+                  "const pad = (n) => n < 10 ? '0'+n : n;",
+                  "const dateStr = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());",
+                  "pm.environment.set('current_date', dateStr);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activityDate\": \"{{current_date}}\",\n  \"sleepHours\": 7,\n  \"studyHours\": 6,\n  \"screenTimeHours\": 4,\n  \"socialMediaHours\": 2,\n  \"physicalActivityMinutes\": 30,\n  \"caffeineIntakeMg\": 200,\n  \"moodScore\": 6,\n  \"fatigueLevel\": 5,\n  \"assignmentLoad\": 3,\n  \"deadlinePressure\": 7,\n  \"socialInteractionScore\": 5,\n  \"financialWorryScore\": 4,\n  \"healthConditionScore\": 8\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/activities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Activities",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response has activities array\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.activities).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/activities?limit=20&offset=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Activity By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/activities/{{activity_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities",
+                "{{activity_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Predictions",
+      "item": [
+        {
+          "name": "List Predictions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/predictions?limit=20&offset=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "predictions"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Latest Prediction",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/predictions/latest",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "predictions",
+                "latest"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Weekly Summaries",
+      "item": [
+        {
+          "name": "Generate Weekly Summary",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/weekly-summaries/generate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "weekly-summaries",
+                "generate"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Weekly Summaries",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/weekly-summaries?limit=10&offset=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "weekly-summaries"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Latest Weekly Summary",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/weekly-summaries/latest",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "weekly-summaries",
+                "latest"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Insights",
+      "item": [
+        {
+          "name": "List Insights",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/insights?limit=10&offset=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "insights"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Latest Insight",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/insights/latest",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "insights",
+                "latest"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recommendations",
+      "item": [
+        {
+          "name": "List Recommendations",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Extract recommendation_id\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.recommendations && jsonData.data.recommendations.length > 0) {",
+                  "        pm.environment.set(\"recommendation_id\", jsonData.data.recommendations[0].id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/recommendations?limit=10&offset=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recommendations"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Latest Recommendation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/recommendations/latest",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recommendations",
+                "latest"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mark Recommendation as Read",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/recommendations/{{recommendation_id}}/read",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recommendations",
+                "{{recommendation_id}}",
+                "read"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Trend Data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/trend?days=30",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "trend"
+              ],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "30"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Exports",
+      "item": [
+        {
+          "name": "Export Daily Prediction",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"targetEmail\": \"{{test_email}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/exports/daily-prediction",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "exports",
+                "daily-prediction"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export Weekly Summary",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"targetEmail\": \"{{test_email}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/exports/weekly-summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "exports",
+                "weekly-summary"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Teardown",
+      "item": [
+        {
+          "name": "Delete Activity",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/activities/{{activity_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities",
+                "{{activity_id}}"
+              ]
             }
           }
         },
@@ -327,215 +1275,30 @@
             },
             "url": {
               "raw": "{{base_url}}/authentications",
-              "host": ["{{base_url}}"],
-              "path": ["authentications"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "authentications"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         }
-      ]
-    },
-    {
-      "name": "Profile",
-      "item": [
-        {
-          "name": "Get My Profile",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test(\"Response contains user data\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data).to.exist;",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/profiles/me",
-              "host": ["{{base_url}}"],
-              "path": ["profiles", "me"]
-            }
-          }
-        },
-        {
-          "name": "Get My Profile - Unauthorized (Negative)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 401\", function () {",
-                  "    pm.response.to.have.status(401);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/profiles/me",
-              "host": ["{{base_url}}"],
-              "path": ["profiles", "me"]
-            }
-          }
-        },
-        {
-          "name": "Update Info",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"fullname\": \"John Doe Updated\",\n    \"email\": \"johndoeupdated@example.com\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/profiles/info",
-              "host": ["{{base_url}}"],
-              "path": ["profiles", "info"]
-            }
-          }
-        },
-        {
-          "name": "Update Password",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"oldPassword\": \"password123\",\n    \"newPassword\": \"newpassword123\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/profiles/password",
-              "host": ["{{base_url}}"],
-              "path": ["profiles", "password"]
-            }
-          }
-        },
-        {
-          "name": "Upload Picture",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "profilePicture",
-                  "type": "file",
-                  "src": []
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{base_url}}/profiles/picture",
-              "host": ["{{base_url}}"],
-              "path": ["profiles", "picture"]
-            }
-          }
-        }
-      ]
+      ],
+      "description": "Teardown and cleanup requests"
     }
-  ]
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  }
 }

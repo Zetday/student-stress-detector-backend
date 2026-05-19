@@ -38,6 +38,7 @@
     "eslint": "^10.0.3",
     "eslint-config-dicodingacademy": "^0.9.5",
     "globals": "^17.4.0",
+    "newman": "^6.2.2",
     "nodemon": "^3.1.14"
   }
 }

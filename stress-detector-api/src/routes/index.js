@@ -8,6 +8,7 @@ import weeklySummaries from '../services/weekly-summaries/routes/index.js';
 import insights from '../services/insights/routes/index.js';
 import recommendations from '../services/recommendations/routes/index.js';
 import dashboard from '../services/dashboard/routes/index.js';
+import exportsRouter from '../services/exports/routes/index.js';
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use('/weekly-summaries', weeklySummaries);
 router.use('/insights', insights);
 router.use('/recommendations', recommendations);
 router.use('/dashboard', dashboard);
+router.use('/exports', exportsRouter);
 
 export default router;
