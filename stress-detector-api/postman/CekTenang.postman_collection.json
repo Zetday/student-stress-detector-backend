@@ -538,7 +538,7 @@
                 {
                   "key": "profilePicture",
                   "type": "file",
-                  "src": "postman/dummy.jpg"
+                  "src": "test-picture/dummy.jpg"
                 }
               ]
             },
