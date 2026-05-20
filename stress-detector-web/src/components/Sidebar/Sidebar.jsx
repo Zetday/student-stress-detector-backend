@@ -1,7 +1,7 @@
 import { useState } from "react";
 import SidebarItem from "./SidebarItem";
 import logo from "../../assets/img/logo.png";
-import Icons from "./Icons";
+import IconsSidebar from "./IconsSidebar";
 
 // Contexts
 import { useLanguage } from "../../contexts/LanguageContext";
@@ -82,7 +82,7 @@ function Sidebar() {
             <SidebarItem
               to="/dashboard"
               icon={
-                <Icons
+                <IconsSidebar
                   paths={
                     <path
                       d="M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z"
@@ -100,7 +100,7 @@ function Sidebar() {
             <SidebarItem
               to="/activities"
               icon={
-                <Icons
+                <IconsSidebar
                   paths={
                     <>
                       <path
@@ -127,7 +127,7 @@ function Sidebar() {
             <SidebarItem
               to="/prediction"
               icon={
-                <Icons
+                <IconsSidebar
                   paths={
                     <>
                       <path
@@ -153,7 +153,7 @@ function Sidebar() {
             <SidebarItem
               to="/recommendations"
               icon={
-                <Icons
+                <IconsSidebar
                   paths={
                     <>
                       <path
@@ -173,7 +173,7 @@ function Sidebar() {
             <SidebarItem
               to="/insights"
               icon={
-                <Icons
+                <IconsSidebar
                   paths={
                     <>
                       <path
@@ -200,7 +200,7 @@ function Sidebar() {
             <SidebarItem
               to="/profile"
               icon={
-                <Icons
+                <IconsSidebar
                   paths={
                     <>
                       <path
@@ -222,7 +222,7 @@ function Sidebar() {
             <SidebarItem
               to="/login"
               icon={
-                <Icons
+                <IconsSidebar
                   paths={
                     <>
                       <path

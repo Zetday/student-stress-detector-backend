@@ -3,12 +3,7 @@ import Buttons from "./Buttons";
 import FotoProfile from "./FotoProfile";
 import NameDisplay from "./NameDisplay";
 
-function Navbar({
-  title = "Dashboard",
-  name = "Aryanda",
-  role = "User Profile",
-  profilePhoto,
-}) {
+function Navbar({ title, name, role, profilePhoto}) {
   return (
     <header
       className="

@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-function NameDisplay({ name = "User", role = "User Profile" }) {
+function NameDisplay({ name, role }) {
   return (
     <div className="text-right">
       <p className="text-base font-bold leading-none text-white">

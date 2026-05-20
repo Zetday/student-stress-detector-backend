@@ -8,7 +8,7 @@ function DashboardPage() {
         <Sidebar />
 
         <main className="min-w-0 flex-1">
-          <Navbar title="Dashboard" name="Aryanda" role="User Profile" />
+          <Navbar title="Dashboard" name="User" role="User Profile" />
 
           <section className="p-8">
             <div className="rounded-xl border border-white/5 bg-[#141414] p-6">
