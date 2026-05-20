@@ -46,6 +46,14 @@ const translations = {
     LabelNewPassword: "Kata Sandi Baru",
     LabelConfirmNewPassword: "Konfirmasi Kata Sandi Baru" ,
 
+    // Sidebar
+    ActSdbr: "Catatan Aktivitas",
+    CekStresSdbr: "Cek Stres",
+    ReqomendationSdbr: "Rekomendasi",
+    ProfileSdbr: "Profile Saya",
+    LogoutSdbr: "Keluar",
+    
+
   },
   en: {
     // LeftPanel
@@ -89,6 +97,13 @@ const translations = {
     ButtonNewPassword: "Update Password",
     LabelNewPassword: "New Password",
     LabelConfirmNewPassword: "Confirm New Password",
+
+    // Sidebar
+    ActSdbr: "Activity Log",
+    CekStresSdbr: "Stress Check",
+    ReqomendationSdbr: "Recommendation",
+    ProfileSdbr: "My Profile",
+    LogoutSdbr: "Logout",
   },
 };
 

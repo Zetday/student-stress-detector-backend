@@ -3,7 +3,11 @@ import SidebarItem from "./SidebarItem";
 import logo from "../../assets/img/logo.png";
 import Icons from "./Icons";
 
+// Contexts
+import { useLanguage } from "../../contexts/LanguageContext";
+
 function Sidebar() {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -117,7 +121,7 @@ function Sidebar() {
                 />
               }
             >
-              Catat aktivitas
+              {t.ActSdbr}
             </SidebarItem>
 
             <SidebarItem
@@ -143,7 +147,7 @@ function Sidebar() {
                 />
               }
             >
-              Cek Stres
+              {t.CekStresSdbr}
             </SidebarItem>
 
             <SidebarItem
@@ -163,7 +167,7 @@ function Sidebar() {
                 />
               }
             >
-              Rekomendasi
+              {t.ReqomendationSdbr}
             </SidebarItem>
 
             <SidebarItem
@@ -210,7 +214,7 @@ function Sidebar() {
                 />
               }
             >
-              Profil saya
+              {t.ProfileSdbr}
             </SidebarItem>
           </div>
 
@@ -233,7 +237,7 @@ function Sidebar() {
                 />
               }
             >
-              Keluar
+              {t.LogoutSdbr}
             </SidebarItem>
           </div>
         </nav>
