@@ -1,16 +1,13 @@
-import React from "react";
 import PropTypes from "prop-types";
-import { useLanguage } from "../contexts/LanguageContext";
 
-function InputName({ name, onChange }) {
-  const { t } = useLanguage();
-
-  return (
+function InputName({ value, onChange, children, placeholder }) {
+ return (
     <div>
-      <label className="text-xs text-gray-500">{t.LabelName}</label>
+      <label className="text-xs font-semibold tracking-wide text-gray-500">{children}</label>
       <input
         type="text"
-        placeholder={t.InputName}
+        autoComplete="email"
+        placeholder={placeholder}
          className="
           w-full mt-1 px-4 py-3 rounded-xl 
           bg-gray-200 border border-gray-200 
@@ -18,17 +15,19 @@ function InputName({ name, onChange }) {
           text-sm text-black
           placeholder:text-sm placeholder:text-gray-400
           
-          focus:outline-none focus:ring-2 focus:ring-blue-500"
-        value={name}
-        onChange={(e) => onChange(e.target.value)}
+          focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+        value={value}
+        onChange={onChange}
       />
     </div>
   );
 }
 
 InputName.propTypes = {
-  name: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  children: PropTypes.node,
+  placeholder: PropTypes.string,
 };
 
 export default InputName;

@@ -1,4 +1,8 @@
+import { useLanguage } from "../src/contexts/LanguageContext";
+
 export default function LeftPanel() {
+  const { t } = useLanguage();
+
   return (
     <div
       className="
@@ -28,9 +32,9 @@ export default function LeftPanel() {
             max-w-md
           "
         >
-          Analisis Klinis Untuk
+          {t.Heading1}
           <br/>
-          Keseimbangan Anda.
+          {t.Heading2}
         </h1>
 
         {/* Description */}
@@ -43,9 +47,7 @@ export default function LeftPanel() {
             mb-10
           "
         >
-          Optimalkan kesehatan mental Anda dengan teknologi
-          analisis biometrik tercanggih untuk performa yang
-          lebih tenang dan terukur.
+          {t.Deskripsi}
         </p>
 
         {/* Feature cards */}
@@ -80,12 +82,11 @@ export default function LeftPanel() {
 
             <div>
               <h3 className="text-[17px] font-semibold mb-1">
-                Analisis Biometrik Real-time
+                {t.Subheading1}
               </h3>
 
               <p className="text-sm text-gray-400 leading-6">
-                Pantau fluktuasi kortisol dan detak jantung
-                Anda secara instan dengan akurasi klinis.
+                {t.Subdeskripsi1}
               </p>
             </div>
           </div>
@@ -119,12 +120,11 @@ export default function LeftPanel() {
 
             <div>
               <h3 className="text-[17px] font-semibold mb-1">
-                Laporan Klinis Mingguan
+                {t.Subheading2}
               </h3>
 
               <p className="text-sm text-gray-400 leading-6">
-                Dapatkan ringkasan data mendalam yang disusun
-                oleh algoritma medis untuk performa optimal.
+                {t.Subdeskripsi2}
               </p>
             </div>
           </div>
@@ -142,7 +142,7 @@ export default function LeftPanel() {
           mt-16
         "
       >
-        © 2024 STRESS LENS. SCIENTIFIC ATELIER PRECISION.
+        © 2026 CEKSTRESS. SCIENTIFIC ATELIER PRECISION.
       </p>
     </div>
   );

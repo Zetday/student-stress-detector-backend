@@ -1,8 +1,4 @@
-import React from "react";
-import { useTransition } from "react";
-
 function ButtonSubmit({children}){
-    const { t } = useTransition;
     return (
         <button className="
             w-full

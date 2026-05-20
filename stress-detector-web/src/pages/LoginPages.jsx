@@ -1,6 +1,6 @@
 // Sistem
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import useInput from "../../hooks/useInput";
 import { useLanguage } from "../contexts/LanguageContext";
 
@@ -11,54 +11,20 @@ import google from "../assets/img/google-color-svgrepo-com.svg"
 // Komponent
 import ButtonSubmit from "../components/ButtonSubmit";
 import InputEmail from "../components/InputEmail";
-import InputName from "../components/InputName";
 import InputPassword from "../components/InputPassword";
-import { register } from "../services/authService";
+import { login } from "../services/authService";
 
 // layouts
 import LeftPanel from "../../layouts/LeftPanel";
 
-function RegisterPage() {
-  const [name, onNameChange] = useInput("");
+function LoginPage() {
   const [email, onEmailChange] = useInput("");
   const [password, onPasswordChange] = useInput("");
-  const [confirmPassword, onConfirmPasswordChange] = useInput("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [apiError, setApiError] = useState("");
 
   const { t } = useLanguage();
-  const navigate = useNavigate();
-
-  function validatePassword(value) {
-    if (value.length < 8) {
-      return "Password minimal harus 8 karakter.";
-    }
-
-    if (!/\d/.test(value)) {
-      return "Password harus memiliki minimal 1 angka.";
-    }
-
-    if (!/[!@#$%^&*(),.?":{}|<>\-_]/.test(value)) {
-      return "Password harus memiliki minimal 1 karakter khusus.";
-    }
-
-    return "";
-  }
-
-  function handlePasswordChange(e) {
-    onPasswordChange(e);
-    setApiError("");
-    setPasswordError("");
-    setConfirmPasswordError("");
-  }
-
-  function handleConfirmPasswordChange(e) {
-    onConfirmPasswordChange(e);
-    setApiError("");
-    setConfirmPasswordError("");
-  }
 
   function handleEmailChange(e) {
     onEmailChange(e);
@@ -66,27 +32,24 @@ function RegisterPage() {
     setEmailError("");
   }
 
+  function handlePasswordChange(e) {
+    onPasswordChange(e);
+    setApiError("");
+    setPasswordError("");
+  }
+
   async function onSubmitHandler(e) {
     e.preventDefault();
     setApiError("");
     setEmailError("");
+    setPasswordError("");
 
-    const validationMessage = validatePassword(password);
-
-    if (validationMessage) {
-      setPasswordError(validationMessage);
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setConfirmPasswordError("Password dan konfirmasi password tidak cocok!");
-      return;
-    }
-
-    const { error, message } = await register({ name, email, password });
+    const { error, data, message } = await login({ email, password });
 
     if (error) {
-      if (message.toLowerCase().includes("email")) {
+      if (message.toLowerCase().includes("kredensial")) {
+        setPasswordError("Email atau password salah.");
+      } else if (message.toLowerCase().includes("email")) {
         setEmailError(message);
       } else {
         setApiError(message);
@@ -95,8 +58,8 @@ function RegisterPage() {
       return;
     }
 
-    navigate("/login");
-
+    localStorage.setItem("accessToken", data.accessToken);
+    localStorage.setItem("refreshToken", data.refreshToken);
   }
 
   return (
@@ -125,7 +88,7 @@ function RegisterPage() {
         <div className="hidden md:block">
           <LeftPanel />
         </div>
-
+        
         {/* RIGHT */}
         <div
           className="
@@ -140,7 +103,7 @@ function RegisterPage() {
 
             {/* Heading */}
             <h2 className="text-4xl font-bold text-white mb-2">
-              {t.Create}
+              {t.Login}
             </h2>
 
             <p className="text-sm text-gray-400 mb-10">
@@ -152,16 +115,9 @@ function RegisterPage() {
               onSubmit={onSubmitHandler}
               className="space-y-6"
             >
-              {/* Name */}
-              <InputName
-                value={name}
-                onChange={onNameChange}
-                children={t.LabelName}
-                placeholder={t.InputName}
-              />
 
               {/* Email */}
-              <InputEmail
+             <InputEmail
                 value={email}
                 onChange={handleEmailChange}
                 error={emailError}
@@ -170,24 +126,16 @@ function RegisterPage() {
               />
 
               {/* Password Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              <div className="grid gap-4 mb-4">
                 <InputPassword
                   value={password}
-                  autoComplete="new-password"
+                  autoComplete="current-password"
                   onChange={handlePasswordChange}
                   error={passwordError}
-                  placeholder="******"> 
-                  {t.LabelPassword} 
+                  placeholder="******"> {t.LabelPassword} 
                 </InputPassword>
 
-                <InputPassword
-                  value={confirmPassword}
-                  autoComplete="new-password"
-                  onChange={handleConfirmPasswordChange}
-                  error={confirmPasswordError}
-                  placeholder="******">
-                  {t.LabelConfirmPassword}
-                </InputPassword>
+              <span className="text-red-600 text-right mb-2"><Link to="/resetpassword">{t.ResetPassword}</Link></span>
               </div>
 
               {apiError && (
@@ -198,7 +146,7 @@ function RegisterPage() {
 
               {/* Submit */}
               <ButtonSubmit type="submit">
-                {t.SubmitRegister}
+                {t.SubmitLogin}
               </ButtonSubmit>
 
               {/* Divider */}
@@ -240,10 +188,10 @@ function RegisterPage() {
 
               {/* Switch */}
               <p className="text-sm text-center text-gray-500 pt-2">
-                {t.LabelLogin}{" "}
+                {t.LabelRegister}{" "}
 
                 <Link
-                  to="/login"
+                  to="/register"
                   className="
                     text-[#9BB3FF]
                     hover:text-white
@@ -251,7 +199,7 @@ function RegisterPage() {
                     font-medium
                   "
                 >
-                  {t.LinkLogin}
+                  {t.LinkRegister}
                 </Link>
               </p>
             </form>
@@ -263,4 +211,4 @@ function RegisterPage() {
   );
 }
 
-export default RegisterPage;
+export default LoginPage;
