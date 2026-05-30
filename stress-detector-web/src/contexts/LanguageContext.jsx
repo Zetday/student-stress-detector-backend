@@ -4,6 +4,17 @@ const LanguageContext = createContext();
 
 const translations = {
   id: {
+    // General Translate
+    Senin: "Sen",
+    Selasa: "Sel",
+    Rabu: "Rab",
+    Kamis: "Kam",
+    Jumat: "Jum",
+    Sabtu: "Sab",
+    Minggu: "Ming",
+
+
+
     // LeftPanel
     Heading1: "Analisis Tingkat Stres Berbasis AI",
     Heading2: "Untuk Kesehatan Mental Anda.",
@@ -118,6 +129,16 @@ const translations = {
 
 
   en: {
+     // General Translate
+    Senin: "Mon",
+    Selasa: "Tue",
+    Rabu: "Wed",
+    Kamis: "Thu",
+    Jumat: "Fri",
+    Sabtu: "Sat",
+    Minggu: "Sun",
+
+
     // LeftPanel
     Heading1: "AI-Based Stress Level Analysis",
     Heading2: "For Your Mental Health.",

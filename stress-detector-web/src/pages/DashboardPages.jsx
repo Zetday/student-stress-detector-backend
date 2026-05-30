@@ -65,68 +65,34 @@ function DashboardPage() {
       </div>
 
       <Datas
-        metric="mood"
+        metric="Mood"
         title={t.MoodScoreTitle}
-        value="8.4"
+        value="65"
       />
       <Datas
-        metric="fatigue"
+        metric="Fatigue"
         title={t.FatigueLevelTitle}
         value="60"
       />
       <Datas
-        metric="socialMedia"
+        metric="SocialMedia"
         title={t.SocialMediaTitle}
-        value="6"
+        value="2"
       />
       <Datas
-        metric="stress"
+        metric="Stress"
         title={t.StressScoreTitle}
         value="72"
       />
 
 
     {/* Chart */}
-    <div
-      className="
-        col-span-1 lg:col-span-3
-        bg-zinc-800 rounded-2xl
-        p-4 md:p-6
-      "
-    >
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
-        <h2 className="text-lg md:text-xl font-semibold text-white">
-          Tren stres 7 hari
-        </h2>
+    <div className="col-span-1 lg:col-span-3">
 
-        <span className="text-sm text-blue-400">
-          Average 64
-        </span>
+      <div className="col-span-1 lg:col-span-3">
+        <StressChart />
       </div>
 
-
-
-      {/* Dummy chart */}
-      <div className="h-[220px] md:h-[280px] flex items-end justify-between gap-2">
-        {[40, 60, 50, 70, 65, 72, 55].map((value, index) => (
-          <div
-            key={index}
-            className="flex-1 bg-blue-500 rounded-t-xl"
-            style={{ height: `${value * 2}px` }}
-          />
-        ))}
-      </div>
-
-      {/* Days */}
-      <div className="grid grid-cols-7 mt-4 text-center text-[10px] md:text-xs text-zinc-400">
-        <span>MON</span>
-        <span>TUE</span>
-        <span>WED</span>
-        <span>THU</span>
-        <span>FRI</span>
-        <span className="text-red-400">SAT</span>
-        <span>SUN</span>
-      </div>
     </div>
 
     {/* Side Panel */}
@@ -137,10 +103,11 @@ function DashboardPage() {
 
       <div className="space-y-5">
         {[
-          { label: "Tidur", value: "8%", width: "8%", color: "bg-red-400" },
-          { label: "Kerja", value: "88%", width: "88%", color: "bg-red-400" },
-          { label: "Layar", value: "92%", width: "92%", color: "bg-blue-400" },
-          { label: "Gerak", value: "40%", width: "40%", color: "bg-emerald-400" },
+          { label: `${t.StudyTimeTitle}`, value: "8%", width: "8%", color: "bg-red-400" },
+          { label: `${t.TaskLoadTitle}`, value: "88%", width: "88%", color: "bg-red-400" },
+          { label: `${t.DeadlinePressureTitle}`, value: "92%", width: "92%", color: "bg-blue-400" },
+          { label: `${t.PhysicalActivityTitle}`, value: "40%", width: "40%", color: "bg-emerald-400" },
+          { label: `${t.LastNightSleepTitle}`, value: "40%", width: "40%", color: "bg-emerald-400" },
         ].map((item, index) => (
           <div key={index}>
             <div className="flex justify-between mb-2">
