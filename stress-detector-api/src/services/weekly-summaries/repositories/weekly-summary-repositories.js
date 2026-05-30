@@ -75,7 +75,11 @@ class WeeklySummaryRepositories {
                AVG(screen_time_hours)::float         AS average_screen_time_hours,
                AVG(study_hours)::float               AS average_study_hours,
                AVG(mood_score)::float                AS average_mood_score,
-               AVG(fatigue_level)::float             AS average_fatigue_level
+               AVG(fatigue_level)::float             AS average_fatigue_level,
+               AVG(physical_activity_minutes)::float AS average_physical_activity,
+               AVG(financial_worry_score)::float     AS average_financial_worry,
+               AVG(health_condition_score)::float    AS average_health_condition,
+               AVG(caffeine_intake_mg)::float        AS average_caffeine_intake
              FROM daily_activities
              WHERE user_id = $1
                AND activity_date BETWEEN $2 AND $3`,
@@ -86,12 +90,23 @@ class WeeklySummaryRepositories {
   }
 
   /**
-   * Average stress score from predictions for the week.
+   * Average stress score and details from predictions for the week.
    */
   async aggregateWeekPredictions(userId, weekStart, weekEnd) {
     const query = {
       text: `SELECT
-               AVG(stress_score)::float AS average_stress_level
+               AVG(stress_score)::float AS average_stress_level,
+               (
+                 SELECT id FROM stress_predictions
+                 WHERE user_id = $1 AND prediction_date BETWEEN $2 AND $3
+                 ORDER BY prediction_date DESC, created_at DESC
+                 LIMIT 1
+               ) AS latest_prediction_id,
+               ARRAY(
+                 SELECT stress_level FROM stress_predictions
+                 WHERE user_id = $1 AND prediction_date BETWEEN $2 AND $3
+                 ORDER BY prediction_date ASC, created_at ASC
+               ) AS daily_stress_levels
              FROM stress_predictions
              WHERE user_id = $1
                AND prediction_date BETWEEN $2 AND $3`,

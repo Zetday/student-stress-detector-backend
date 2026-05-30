@@ -4,7 +4,7 @@ import { InvariantError } from '../../../exceptions/index.js';
 import WeeklySummaryRepositories from '../repositories/weekly-summary-repositories.js';
 import InsightRepositories from '../../insights/repositories/insight-repositories.js';
 import RecommendationRepositories from '../../recommendations/repositories/recommendation-repositories.js';
-import { generateInsight } from '../../../ai/ml-client.js';
+import { generateInsight, generateRecommendation } from '../../../ai/ml-client.js';
 
 export const getWeeklySummaries = async (req, res) => {
   const { id: userId } = req.user;
@@ -30,7 +30,8 @@ export const getLatestWeeklySummary = async (req, res) => {
 /**
  * POST /weekly-summaries/generate
  * Aggregates this week's activity + prediction data,
- * calls the ML service for an insight, then saves everything.
+ * calls the Insight and Recommendation microservices separately,
+ * then saves everything.
  *
  * Best for capstone: manual trigger that can also be called
  * after every week of submissions (no external cron needed).
@@ -72,7 +73,14 @@ export const generateWeeklySummary = async (req, res, next) => {
   // 3. Derive stress trend vs. previous week
   const stressTrend = await WeeklySummaryRepositories.deriveStressTrend(userId, weekStartStr);
 
-  // 4. Save weekly summary
+  // 4. Collect daily stress levels for the week (for insight weekly_stress_levels)
+  const dailyPredictions = predictionStats?.daily_stress_levels ?? [];
+
+  // Determine dominant stress level label for the week
+  const stressLevelLabel = avgStressLevel >= 2.5 ? 'high'
+    : avgStressLevel >= 1.5 ? 'medium' : 'low';
+
+  // 5. Save weekly summary
   const summary = await WeeklySummaryRepositories.saveSummary({
     userId,
     weekStart: weekStartStr,
@@ -84,50 +92,77 @@ export const generateWeeklySummary = async (req, res, next) => {
     stressTrend,
   });
 
-  // 5. Call ML service for insight + recommendation
-  const mlPayload = {
-    user_id: userId,
-    week_start: weekStartStr,
-    week_end: weekEndStr,
-    average_stress_level: avgStressLevel,
-    average_sleep_hours: activityStats.average_sleep_hours,
-    average_screen_time_hours: activityStats.average_screen_time_hours,
-    average_study_hours: activityStats.average_study_hours,
-    stress_trend: stressTrend,
+  // 6. Build payloads for Insight and Recommendation microservices
+  const sharedFeatures = {
+    sleep_hours: activityStats.average_sleep_hours ?? null,
+    mood_score: activityStats.average_mood_score ?? null,
+    study_hours: activityStats.average_study_hours ?? null,
+    physical_activity: activityStats.average_physical_activity ?? null,
+    screen_time: activityStats.average_screen_time_hours ?? null,
+    fatigue_score: activityStats.average_fatigue_level ?? null,
+    financial_stress: activityStats.average_financial_worry ?? null,
+    health_score: activityStats.average_health_condition ?? null,
+    caffeine_intake: activityStats.average_caffeine_intake ?? null,
   };
 
-  const mlResult = await generateInsight(mlPayload);
+  const insightPayload = {
+    user_id: userId,
+    stress_prediction_id: predictionStats?.latest_prediction_id ?? 0,
+    stress_level: stressLevelLabel,
+    input_features: sharedFeatures,
+    period_type: 'weekly',
+    weekly_summary_id: summary.id,
+    weekly_stress_levels: dailyPredictions,
+  };
+
+  const recommendationPayload = {
+    user_id: userId,
+    stress_prediction_id: predictionStats?.latest_prediction_id ?? 0,
+    stress_level: stressLevelLabel,
+    input_features: sharedFeatures,
+    period_type: 'weekly',
+    weekly_summary_id: summary.id,
+    max_recommendations: 3,
+  };
+
+  // 7. Call Insight and Recommendation services in parallel
+  const [insightResult, recommendationResult] = await Promise.allSettled([
+    generateInsight(insightPayload),
+    generateRecommendation(recommendationPayload),
+  ]);
+
+  const mlInsight = insightResult.status === 'fulfilled' ? insightResult.value : null;
+  const mlRecommendation = recommendationResult.status === 'fulfilled' ? recommendationResult.value : null;
 
   let insight = null;
   let recommendation = null;
 
-  if (mlResult) {
-    // 6. Save insight
-    if (mlResult.insight_text) {
-      insight = await InsightRepositories.saveInsight({
-        userId,
-        weeklySummaryId: summary.id,
-        periodType: 'weekly',
-        insightText: mlResult.insight_text,
-      });
-    }
+  // 8. Save insight if available
+  if (mlInsight?.insight_text) {
+    insight = await InsightRepositories.saveInsight({
+      userId,
+      weeklySummaryId: summary.id,
+      periodType: 'weekly',
+      insightText: mlInsight.insight_text,
+    });
+  }
 
-    // 7. Save recommendation
-    if (mlResult.recommendation_text) {
-      recommendation = await RecommendationRepositories.saveRecommendation({
-        userId,
-        weeklySummaryId: summary.id,
-        periodType: 'weekly',
-        category: mlResult.category || null,
-        recommendationText: mlResult.recommendation_text,
-      });
-    }
+  // 9. Save recommendation(s) if available
+  if (mlRecommendation?.recommendations?.length > 0) {
+    const firstRec = mlRecommendation.recommendations[0];
+    recommendation = await RecommendationRepositories.saveRecommendation({
+      userId,
+      weeklySummaryId: summary.id,
+      periodType: 'weekly',
+      category: firstRec.category || null,
+      recommendationText: firstRec.recommendation_text,
+    });
   }
 
   return response(res, 201, 'Ringkasan mingguan berhasil dibuat', {
     summary,
     insight,
     recommendation,
-    mlAvailable: mlResult !== null,
+    mlAvailable: mlInsight !== null || mlRecommendation !== null,
   });
 };

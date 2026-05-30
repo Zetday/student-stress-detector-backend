@@ -1,7 +1,11 @@
 /* eslint-disable camelcase */
 /**
- * ML Client — communicates with the FastAPI / Flask prediction service.
- * If the ML service is unavailable, methods return null so the Express
+ * ML Client — communicates with the three FastAPI microservices:
+ *   1. Prediction Service  (port 8000) — stress level prediction
+ *   2. Recommendation Service (port 8001) — personalized recommendations
+ *   3. Insight Service (port 8002) — AI-generated insights
+ *
+ * If any ML service is unavailable, methods return null so the Express
  * request still succeeds (activity is saved; prediction is simply null).
  */
 
@@ -10,18 +14,37 @@ if (mlUrl && !mlUrl.startsWith('http://') && !mlUrl.startsWith('https://')) {
   mlUrl = `http://${mlUrl}`;
 }
 const ML_SERVICE_URL = mlUrl;
+
+const PREDICT_SERVICE_URL = process.env.PREDICT_SERVICE_URL
+  ? (process.env.PREDICT_SERVICE_URL.startsWith('http://') || process.env.PREDICT_SERVICE_URL.startsWith('https://')
+    ? process.env.PREDICT_SERVICE_URL
+    : `http://${process.env.PREDICT_SERVICE_URL}`)
+  : ML_SERVICE_URL;
+
+const RECOMMENDATION_SERVICE_URL = process.env.RECOMMENDATION_SERVICE_URL
+  ? (process.env.RECOMMENDATION_SERVICE_URL.startsWith('http://') || process.env.RECOMMENDATION_SERVICE_URL.startsWith('https://')
+    ? process.env.RECOMMENDATION_SERVICE_URL
+    : `http://${process.env.RECOMMENDATION_SERVICE_URL}`)
+  : ML_SERVICE_URL;
+
+const INSIGHT_SERVICE_URL = process.env.INSIGHT_SERVICE_URL
+  ? (process.env.INSIGHT_SERVICE_URL.startsWith('http://') || process.env.INSIGHT_SERVICE_URL.startsWith('https://')
+    ? process.env.INSIGHT_SERVICE_URL
+    : `http://${process.env.INSIGHT_SERVICE_URL}`)
+  : ML_SERVICE_URL;
 const ML_TIMEOUT_MS = 10_000; // 10 seconds
 
 /**
+ * Predict stress level from daily activity data.
  * @param {object} activityPayload  — the fields from daily_activities
- * @returns {{ stress_score, stress_level, confidence_score, model_version } | null}
+ * @returns {{ status, prediction: { stress_level_label, confidence_score, probabilities } } | null}
  */
 export const predictStress = async (activityPayload) => {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), ML_TIMEOUT_MS);
 
-    const res = await fetch(`${ML_SERVICE_URL}/predict`, {
+    const res = await fetch(`${PREDICT_SERVICE_URL}/predict`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(activityPayload),
@@ -105,18 +128,19 @@ export const predictStress = async (activityPayload) => {
 };
 
 /**
- * @param {object} weeklySummaryPayload — aggregated weekly stats
- * @returns {{ insight_text, recommendation_text, category } | null}
+ * Generate AI insight text from weekly summary or daily data.
+ * @param {object} insightPayload — insight request body matching InsightRequest schema
+ * @returns {{ success, insight_text, ... } | null}
  */
-export const generateInsight = async (weeklySummaryPayload) => {
+export const generateInsight = async (insightPayload) => {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), ML_TIMEOUT_MS);
 
-    const res = await fetch(`${ML_SERVICE_URL}/insights`, {
+    const res = await fetch(`${INSIGHT_SERVICE_URL}/insights`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(weeklySummaryPayload),
+      body: JSON.stringify(insightPayload),
       signal: controller.signal,
     });
 
@@ -146,3 +170,37 @@ export const generateInsight = async (weeklySummaryPayload) => {
   }
 };
 
+/**
+ * Generate personalized recommendations based on stress level and input features.
+ * @param {object} recommendationPayload — recommendation request body matching RecommendationRequest schema
+ * @returns {{ success, count, recommendations: [...] } | null}
+ */
+export const generateRecommendation = async (recommendationPayload) => {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), ML_TIMEOUT_MS);
+
+    const res = await fetch(`${RECOMMENDATION_SERVICE_URL}/recommendations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(recommendationPayload),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!res.ok) {
+      console.warn(`[ML Client] generateRecommendation → HTTP ${res.status}`);
+      return null;
+    }
+
+    return await res.json();
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      console.warn('[ML Client] generateRecommendation → request timed out');
+    } else {
+      console.warn('[ML Client] generateRecommendation → service unreachable:', err.message);
+    }
+    return null;
+  }
+};
