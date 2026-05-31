@@ -701,7 +701,7 @@
       "name": "Activities",
       "item": [
         {
-          "name": "Submit Activity",
+          "name": "Submit Activity Day 1",
           "event": [
             {
               "listen": "test",
@@ -714,23 +714,11 @@
                   "pm.test(\"Extract activity_id\", function () {",
                   "    const jsonData = pm.response.json();",
                   "    if (jsonData.data && jsonData.data.activity && jsonData.data.activity.id) {",
-                  "        pm.environment.set(\"activity_id\", jsonData.data.activity.id);",
+                  "        pm.environment.set(\"activity_id_1\", jsonData.data.activity.id);",
                   "    }",
                   "});"
                 ],
                 "type": "text/javascript"
-              }
-            },
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const d = new Date();",
-                  "const pad = (n) => n < 10 ? '0'+n : n;",
-                  "const dateStr = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());",
-                  "pm.environment.set('current_date', dateStr);"
-                ]
               }
             }
           ],
@@ -739,7 +727,278 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"activityDate\": \"{{current_date}}\",\n  \"sleepHours\": 7,\n  \"studyHours\": 6,\n  \"screenTimeHours\": 4,\n  \"socialMediaHours\": 2,\n  \"physicalActivityMinutes\": 30,\n  \"caffeineIntakeMg\": 200,\n  \"moodScore\": 6,\n  \"fatigueLevel\": 5,\n  \"assignmentLoad\": 3,\n  \"deadlinePressure\": 7,\n  \"socialInteractionScore\": 5,\n  \"financialWorryScore\": 4,\n  \"healthConditionScore\": 8\n}",
+              "raw": "{\n  \"activityDate\": \"{{date_day_1}}\",\n  \"sleepHours\": 8,\n  \"studyHours\": 4,\n  \"screenTimeHours\": 2,\n  \"socialMediaHours\": 1,\n  \"physicalActivityMinutes\": 40,\n  \"caffeineIntakeMg\": 50,\n  \"moodScore\": 8,\n  \"fatigueLevel\": 2,\n  \"assignmentLoad\": 1,\n  \"deadlinePressure\": 2,\n  \"socialInteractionScore\": 8,\n  \"financialWorryScore\": 2,\n  \"healthConditionScore\": 9\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/activities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Submit Activity Day 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Extract activity_id\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.activity && jsonData.data.activity.id) {",
+                  "        pm.environment.set(\"activity_id_2\", jsonData.data.activity.id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activityDate\": \"{{date_day_2}}\",\n  \"sleepHours\": 7.5,\n  \"studyHours\": 5.5,\n  \"screenTimeHours\": 3.5,\n  \"socialMediaHours\": 2,\n  \"physicalActivityMinutes\": 30,\n  \"caffeineIntakeMg\": 100,\n  \"moodScore\": 7,\n  \"fatigueLevel\": 3,\n  \"assignmentLoad\": 2,\n  \"deadlinePressure\": 4,\n  \"socialInteractionScore\": 7,\n  \"financialWorryScore\": 2,\n  \"healthConditionScore\": 8\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/activities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Submit Activity Day 3",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Extract activity_id\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.activity && jsonData.data.activity.id) {",
+                  "        pm.environment.set(\"activity_id_3\", jsonData.data.activity.id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activityDate\": \"{{date_day_3}}\",\n  \"sleepHours\": 5.0,\n  \"studyHours\": 9.0,\n  \"screenTimeHours\": 6.0,\n  \"socialMediaHours\": 3,\n  \"physicalActivityMinutes\": 0,\n  \"caffeineIntakeMg\": 300,\n  \"moodScore\": 4,\n  \"fatigueLevel\": 8,\n  \"assignmentLoad\": 8,\n  \"deadlinePressure\": 9,\n  \"socialInteractionScore\": 3,\n  \"financialWorryScore\": 5,\n  \"healthConditionScore\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/activities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Submit Activity Day 4",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Extract activity_id\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.activity && jsonData.data.activity.id) {",
+                  "        pm.environment.set(\"activity_id_4\", jsonData.data.activity.id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activityDate\": \"{{date_day_4}}\",\n  \"sleepHours\": 9.0,\n  \"studyHours\": 2.0,\n  \"screenTimeHours\": 2.0,\n  \"socialMediaHours\": 1,\n  \"physicalActivityMinutes\": 60,\n  \"caffeineIntakeMg\": 0,\n  \"moodScore\": 9,\n  \"fatigueLevel\": 2,\n  \"assignmentLoad\": 1,\n  \"deadlinePressure\": 2,\n  \"socialInteractionScore\": 9,\n  \"financialWorryScore\": 2,\n  \"healthConditionScore\": 9\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/activities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Submit Activity Day 5",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Extract activity_id\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.activity && jsonData.data.activity.id) {",
+                  "        pm.environment.set(\"activity_id_5\", jsonData.data.activity.id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activityDate\": \"{{date_day_5}}\",\n  \"sleepHours\": 6.0,\n  \"studyHours\": 7.0,\n  \"screenTimeHours\": 5.0,\n  \"socialMediaHours\": 2.5,\n  \"physicalActivityMinutes\": 15,\n  \"caffeineIntakeMg\": 250,\n  \"moodScore\": 5,\n  \"fatigueLevel\": 6,\n  \"assignmentLoad\": 5,\n  \"deadlinePressure\": 7,\n  \"socialInteractionScore\": 4,\n  \"financialWorryScore\": 3,\n  \"healthConditionScore\": 7\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/activities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Submit Activity Day 6",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Extract activity_id\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.activity && jsonData.data.activity.id) {",
+                  "        pm.environment.set(\"activity_id_6\", jsonData.data.activity.id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activityDate\": \"{{date_day_6}}\",\n  \"sleepHours\": 4.5,\n  \"studyHours\": 10.0,\n  \"screenTimeHours\": 8.0,\n  \"socialMediaHours\": 4,\n  \"physicalActivityMinutes\": 0,\n  \"caffeineIntakeMg\": 400,\n  \"moodScore\": 3,\n  \"fatigueLevel\": 9,\n  \"assignmentLoad\": 9,\n  \"deadlinePressure\": 10,\n  \"socialInteractionScore\": 2,\n  \"financialWorryScore\": 6,\n  \"healthConditionScore\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/activities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Submit Activity Day 7",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Extract activity_id\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.activity && jsonData.data.activity.id) {",
+                  "        pm.environment.set(\"activity_id_7\", jsonData.data.activity.id);",
+                  "        pm.environment.set(\"activity_id\", jsonData.data.activity.id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activityDate\": \"{{date_day_7}}\",\n  \"sleepHours\": 8.5,\n  \"studyHours\": 0.0,\n  \"screenTimeHours\": 3.0,\n  \"socialMediaHours\": 2,\n  \"physicalActivityMinutes\": 45,\n  \"caffeineIntakeMg\": 100,\n  \"moodScore\": 8,\n  \"fatigueLevel\": 3,\n  \"assignmentLoad\": 0,\n  \"deadlinePressure\": 1,\n  \"socialInteractionScore\": 9,\n  \"financialWorryScore\": 2,\n  \"healthConditionScore\": 9\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -828,6 +1087,30 @@
                 "{{activity_id}}"
               ]
             }
+          }
+        }
+      ],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const d = new Date();",
+              "const dayOfWeek = d.getDay(); // 0 = Sunday",
+              "const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;",
+              "const monday = new Date(d);",
+              "monday.setDate(d.getDate() + diff);",
+              "",
+              "const pad = (n) => n < 10 ? '0' + n : n;",
+              "const formatDate = (date) => date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());",
+              "",
+              "for (let i = 0; i < 7; i++) {",
+              "    const day = new Date(monday);",
+              "    day.setDate(monday.getDate() + i);",
+              "    pm.environment.set(`date_day_${i + 1}`, formatDate(day));",
+              "}"
+            ]
           }
         }
       ]
@@ -1353,7 +1636,7 @@
       "name": "Teardown",
       "item": [
         {
-          "name": "Delete Activity",
+          "name": "Delete Activity Day 1",
           "event": [
             {
               "listen": "test",
@@ -1371,13 +1654,193 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/activities/{{activity_id}}",
+              "raw": "{{base_url}}/activities/{{activity_id_1}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "activities",
-                "{{activity_id}}"
+                "{{activity_id_1}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Activity Day 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/activities/{{activity_id_2}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities",
+                "{{activity_id_2}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Activity Day 3",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/activities/{{activity_id_3}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities",
+                "{{activity_id_3}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Activity Day 4",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/activities/{{activity_id_4}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities",
+                "{{activity_id_4}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Activity Day 5",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/activities/{{activity_id_5}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities",
+                "{{activity_id_5}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Activity Day 6",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/activities/{{activity_id_6}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities",
+                "{{activity_id_6}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Activity Day 7",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/activities/{{activity_id_7}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities",
+                "{{activity_id_7}}"
               ]
             }
           }

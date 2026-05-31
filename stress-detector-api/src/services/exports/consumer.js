@@ -8,21 +8,25 @@ import RecommendationRepositories from '../recommendations/repositories/recommen
 
 class Consumer {
   constructor() {
-    const user = process.env.RABBITMQ_USER || 'guest';
-    const pass = process.env.RABBITMQ_PASSWORD || 'guest';
-    const host = process.env.RABBITMQ_HOST || 'localhost';
-    const port = process.env.RABBITMQ_PORT || '5672';
+    const user = process.env.RABBITMQ_USER;
+    const pass = process.env.RABBITMQ_PASSWORD;
+    const host = process.env.RABBITMQ_HOST;
+    const port = process.env.RABBITMQ_PORT;
 
     this.amqpUri = `amqp://${user}:${pass}@${host}:${port}`;
 
-    this.transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST || 'smtp.mailtrap.io',
-      port: parseInt(process.env.MAIL_PORT || '2525'),
-      auth: {
-        user: process.env.MAIL_USER || 'f56827880f355c',
-        pass: process.env.MAIL_PASSWORD || 'f67f4833aa6429',
-      },
-    });
+    this.transporter = nodemailer.createTransport(
+      process.env.MOCK_MAIL?.trim() === 'true'
+        ? { jsonTransport: true }
+        : {
+          host: process.env.MAIL_HOST,
+          port: parseInt(process.env.MAIL_PORT),
+          auth: {
+            user: process.env.MAIL_USER,
+            pass: process.env.MAIL_PASSWORD,
+          },
+        },
+    );
   }
 
   async start() {
@@ -69,7 +73,7 @@ class Consumer {
       `[Info] Processing export task for User ID: ${userId}, Email: ${targetEmail}, Type: ${type}`,
     );
 
-    // Jeda 2.5 detik untuk menghindari rate limit "Too many emails per second" pada Mailtrap Free Tier
+    // Jeda 2.5 detik untuk menghindari rate limit 'Too many emails per second' pada Mailtrap Free Tier
     await new Promise((resolve) => setTimeout(resolve, 2500));
 
     const userResult = await UserRepositories.getUserById(userId);
@@ -119,7 +123,8 @@ class Consumer {
       await this.transporter.sendMail({
         from: '"CekTenang Team" <no-reply@cektenang.id>',
         to: targetEmail,
-        subject: '[CekTenang] Ringkasan & Rekomendasi Kesehatan Mental Mingguan Anda',
+        subject:
+          '[CekTenang] Ringkasan & Rekomendasi Kesehatan Mental Mingguan Anda',
         html: htmlContent,
       });
     }
@@ -246,20 +251,24 @@ class Consumer {
       trendColor = '#ef4444';
     }
 
-    const insightHtml = insight ? `
+    const insightHtml = insight
+      ? `
       <div style="border-left: 4px solid hsl(174, 60%, 40%); background-color: #f0fdfa; padding: 20px; border-radius: 0 12px 12px 0; margin-bottom: 24px;">
         <h3 style="color: hsl(174, 70%, 30%); margin: 0 0 8px 0; font-size: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Wawasan AI Anda</h3>
         <p style="color: #111827; font-size: 14.5px; line-height: 1.6; margin: 0;">"${insight.insight_text}"</p>
       </div>
-    ` : '';
+    `
+      : '';
 
-    const recommendationHtml = recommendation ? `
+    const recommendationHtml = recommendation
+      ? `
       <div style="background-color: #fcf8f2; border: 1px solid #f3e8d3; padding: 20px; border-radius: 12px; margin-bottom: 32px;">
         <h3 style="color: #b45309; margin: 0 0 8px 0; font-size: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">💡 Rekomendasi Terapi</h3>
         <span style="display: inline-block; background-color: #fef3c7; color: #b45309; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; margin-bottom: 12px;">Kategori: ${recommendation.category || 'Umum'}</span>
         <p style="color: #451a03; font-size: 14.5px; line-height: 1.6; margin: 0;">${recommendation.recommendation_text}</p>
       </div>
-    ` : '';
+    `
+      : '';
 
     return `
       <!DOCTYPE html>

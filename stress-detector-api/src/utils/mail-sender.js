@@ -1,13 +1,17 @@
 import nodemailer from 'nodemailer';
 
-const transporter = nodemailer.createTransport({
-  host: process.env.MAIL_HOST || 'smtp.mailtrap.io',
-  port: parseInt(process.env.MAIL_PORT || '2525'),
-  auth: {
-    user: process.env.MAIL_USER || 'f56827880f355c',
-    pass: process.env.MAIL_PASSWORD || 'f67f4833aa6429',
-  },
-});
+const transporter = nodemailer.createTransport(
+  process.env.MOCK_MAIL?.trim() === 'true'
+    ? { jsonTransport: true }
+    : {
+      host: process.env.MAIL_HOST || 'smtp.mailtrap.io',
+      port: parseInt(process.env.MAIL_PORT || '2525'),
+      auth: {
+        user: process.env.MAIL_USER || 'f56827880f355c',
+        pass: process.env.MAIL_PASSWORD || 'f67f4833aa6429',
+      },
+    }
+);
 
 export const sendPasswordResetEmail = async (email, resetUrl) => {
   const htmlContent = `
