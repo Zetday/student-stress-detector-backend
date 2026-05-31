@@ -198,18 +198,18 @@ class InputFeatures(BaseModel):
 
 # Recommendation Schemas
 class RecommendationRequest(BaseModel):
-    user_id: int
-    stress_prediction_id: int
+    user_id: str
+    stress_prediction_id: str
     stress_level: str                   # "low" | "medium" | "high"
     input_features: InputFeatures
     period_type: str = "daily"          # "daily" | "weekly"
-    weekly_summary_id: Optional[int] = None
+    weekly_summary_id: Optional[str] = None
     max_recommendations: int = 3
 
 class RecommendationItem(BaseModel):
-    user_id: int
-    stress_prediction_id: int
-    weekly_summary_id: Optional[int]
+    user_id: str
+    stress_prediction_id: str
+    weekly_summary_id: Optional[str]
     period_type: str
     category: str
     title: str
@@ -224,19 +224,19 @@ class RecommendationResponse(BaseModel):
 
 # Insight Schemas
 class InsightRequest(BaseModel):
-    user_id: int
-    stress_prediction_id: int
+    user_id: str
+    stress_prediction_id: str
     stress_level: str                       # "low" | "medium" | "high"
     input_features: InputFeatures
     period_type: str = "daily"             # "daily" | "weekly"
-    weekly_summary_id: Optional[int] = None
+    weekly_summary_id: Optional[str] = None
     weekly_stress_levels: Optional[List[str]] = None  # Required if period_type is "weekly"
 
 class InsightResponse(BaseModel):
     success: bool
-    user_id: int
-    stress_prediction_id: int
-    weekly_summary_id: Optional[int]
+    user_id: str
+    stress_prediction_id: str
+    weekly_summary_id: Optional[str]
     period_type: str
     insight_text: str
     created_at: str
@@ -321,11 +321,15 @@ def render_insight(sl: str, factors: List[str]) -> str:
     return template
 
 def weekly_trend(levels: List[str]) -> str:
+    if not levels:
+        return "stable"
     sm = {"low": 1, "medium": 2, "high": 3}
     s = [sm.get(x.lower(), 2) for x in levels]
     if s.count(3) >= 3:
         return "high_days"
     mid = len(s) // 2
+    if mid == 0:
+        return "stable"
     diff = sum(s[mid:]) / len(s[mid:]) - sum(s[:mid]) / len(s[:mid])
     if diff > 0.3: return "worsening"
     if diff < -0.3: return "improving"
