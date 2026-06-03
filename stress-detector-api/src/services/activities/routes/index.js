@@ -7,6 +7,7 @@ import {
   getActivities,
   getActivityById,
   deleteActivity,
+  updateActivity,
 } from '../controller/activity-controller.js';
 
 const router = Router();
@@ -19,6 +20,9 @@ router.get('/', authenticateToken, getActivities);
 
 // GET    /activities/:id    — Get single activity detail
 router.get('/:id', authenticateToken, getActivityById);
+
+// PUT    /activities/:id    — Update daily activity (triggers ML re-prediction)
+router.put('/:id', authenticateToken, validate(createActivitySchema), updateActivity);
 
 // DELETE /activities/:id    — Delete own activity
 router.delete('/:id', authenticateToken, deleteActivity);

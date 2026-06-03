@@ -67,6 +67,37 @@ class PredictionRepositories {
     return result.rows[0] || null;
   }
 
+  async updatePrediction({
+    activityId,
+    predictionDate,
+    stressLevel,
+    stressScore,
+    confidenceScore = null,
+    modelVersion = null,
+  }) {
+    const query = {
+      text: `UPDATE stress_predictions SET
+               prediction_date = $2,
+               stress_level = $3,
+               stress_score = $4,
+               confidence_score = $5,
+               model_version = $6
+             WHERE activity_id = $1
+             RETURNING *`,
+      values: [
+        activityId,
+        predictionDate,
+        stressLevel,
+        stressScore,
+        confidenceScore,
+        modelVersion,
+      ],
+    };
+
+    const result = await this.pool.query(query);
+    return result.rows[0] || null;
+  }
+
   async getStressTrend(userId, days = 30) {
     const query = {
       text: `SELECT prediction_date, stress_score, stress_level

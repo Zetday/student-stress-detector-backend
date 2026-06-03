@@ -746,6 +746,54 @@
           }
         },
         {
+          "name": "Update Activity Day 1 (To High Stress Pattern)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains updated activity and prediction\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql(\"success\");",
+                  "    pm.expect(jsonData.data.activity).to.exist;",
+                  "    pm.expect(parseFloat(jsonData.data.activity.sleep_hours)).to.eql(3);",
+                  "    pm.expect(jsonData.data.prediction).to.exist;",
+                  "    pm.expect(jsonData.data.prediction.stress_level).to.be.a(\"string\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activityDate\": \"{{date_day_1}}\",\n  \"sleepHours\": 3,\n  \"studyHours\": 10,\n  \"screenTimeHours\": 8,\n  \"socialMediaHours\": 4,\n  \"physicalActivityMinutes\": 0,\n  \"moodScore\": 2,\n  \"fatigueLevel\": 9,\n  \"assignmentLoad\": 8,\n  \"deadlinePressure\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/activities/{{activity_id_1}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activities",
+                "{{activity_id_1}}"
+              ]
+            }
+          }
+        },
+        {
           "name": "Submit Activity Day 2",
           "event": [
             {

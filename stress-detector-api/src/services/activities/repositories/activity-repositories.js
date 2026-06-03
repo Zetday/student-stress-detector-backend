@@ -92,6 +92,61 @@ class ActivityRepositories {
     return result.rows[0] || null;
   }
 
+  async updateActivity(id, {
+    activityDate,
+    sleepHours,
+    studyHours,
+    screenTimeHours,
+    socialMediaHours,
+    physicalActivityMinutes,
+    moodScore,
+    fatigueLevel,
+    assignmentLoad,
+    deadlinePressure,
+    activityStatus = 'submitted',
+    note = null,
+  }) {
+    const updatedAt = new Date().toISOString();
+
+    const query = {
+      text: `UPDATE daily_activities SET
+               activity_date = $2,
+               activity_status = $3,
+               sleep_hours = $4,
+               study_hours = $5,
+               screen_time_hours = $6,
+               social_media_hours = $7,
+               physical_activity_minutes = $8,
+               mood_score = $9,
+               fatigue_level = $10,
+               assignment_load = $11,
+               deadline_pressure = $12,
+               note = $13,
+               updated_at = $14
+             WHERE id = $1
+             RETURNING *`,
+      values: [
+        id,
+        activityDate,
+        activityStatus,
+        sleepHours,
+        studyHours,
+        screenTimeHours,
+        socialMediaHours,
+        physicalActivityMinutes,
+        moodScore,
+        fatigueLevel,
+        assignmentLoad,
+        deadlinePressure,
+        note,
+        updatedAt,
+      ],
+    };
+
+    const result = await this.pool.query(query);
+    return result.rows[0] || null;
+  }
+
   async verifyActivityOwner(id, userId) {
     const query = {
       text: 'SELECT id FROM daily_activities WHERE id = $1 AND user_id = $2',

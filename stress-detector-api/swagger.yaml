@@ -31,20 +31,21 @@ components:
         id: { type: string }
         user_id: { type: string }
         activity_date: { type: string, format: date }
+        activity_status:
+          type: string
+          enum: [draft, submitted]
         sleep_hours: { type: number }
         study_hours: { type: number }
         screen_time_hours: { type: number }
         social_media_hours: { type: number }
         physical_activity_minutes: { type: integer }
-        caffeine_intake_mg: { type: integer }
         mood_score: { type: integer }
         fatigue_level: { type: integer }
         assignment_load: { type: integer }
         deadline_pressure: { type: integer }
-        social_interaction_score: { type: integer }
-        financial_worry_score: { type: integer }
-        health_condition_score: { type: integer }
+        note: { type: string, nullable: true }
         created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
 
     Prediction:
       type: object
@@ -369,9 +370,10 @@ paths:
           application/json:
             schema:
               type: object
-              required: [fullname]
+              required: [fullname, email]
               properties:
-                fullname: { type: string }
+                fullname: { type: string, example: Muhammad Rendy }
+                email: { type: string, format: email, example: rendy@example.com }
       responses:
         '200':
           description: Profile updated
@@ -430,14 +432,10 @@ paths:
                 - screenTimeHours
                 - socialMediaHours
                 - physicalActivityMinutes
-                - caffeineIntakeMg
                 - moodScore
                 - fatigueLevel
                 - assignmentLoad
                 - deadlinePressure
-                - socialInteractionScore
-                - financialWorryScore
-                - healthConditionScore
               properties:
                 activityDate: { type: string, format: date, example: '2026-05-18' }
                 sleepHours: { type: number, minimum: 0, maximum: 24, example: 7 }
@@ -445,14 +443,19 @@ paths:
                 screenTimeHours: { type: number, minimum: 0, maximum: 24, example: 4 }
                 socialMediaHours: { type: number, minimum: 0, maximum: 24, example: 2 }
                 physicalActivityMinutes: { type: integer, minimum: 0, example: 30 }
-                caffeineIntakeMg: { type: integer, minimum: 0, example: 200 }
                 moodScore: { type: integer, minimum: 1, maximum: 10, example: 6 }
                 fatigueLevel: { type: integer, minimum: 1, maximum: 10, example: 5 }
                 assignmentLoad: { type: integer, minimum: 0, example: 3 }
                 deadlinePressure: { type: integer, minimum: 1, maximum: 10, example: 7 }
-                socialInteractionScore: { type: integer, minimum: 1, maximum: 10, example: 5 }
-                financialWorryScore: { type: integer, minimum: 1, maximum: 10, example: 4 }
-                healthConditionScore: { type: integer, minimum: 1, maximum: 10, example: 8 }
+                activityStatus:
+                  type: string
+                  enum: [draft, submitted]
+                  default: submitted
+                  example: submitted
+                note:
+                  type: string
+                  maxLength: 500
+                  example: Feel a bit stressed today.
       responses:
         '201':
           description: Activity saved. `prediction` is null if ML service is unavailable.
@@ -514,6 +517,74 @@ paths:
       responses:
         '200':
           description: Activity retrieved
+        '403':
+          description: Not the owner
+        '404':
+          description: Activity not found
+
+    put:
+      summary: Update a daily activity (triggers ML re-prediction)
+      tags: [Activities]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - activityDate
+                - sleepHours
+                - studyHours
+                - screenTimeHours
+                - socialMediaHours
+                - physicalActivityMinutes
+                - moodScore
+                - fatigueLevel
+                - assignmentLoad
+                - deadlinePressure
+              properties:
+                activityDate: { type: string, format: date, example: '2026-05-18' }
+                sleepHours: { type: number, minimum: 0, maximum: 24, example: 7 }
+                studyHours: { type: number, minimum: 0, maximum: 24, example: 6 }
+                screenTimeHours: { type: number, minimum: 0, maximum: 24, example: 4 }
+                socialMediaHours: { type: number, minimum: 0, maximum: 24, example: 2 }
+                physicalActivityMinutes: { type: integer, minimum: 0, example: 30 }
+                moodScore: { type: integer, minimum: 1, maximum: 10, example: 6 }
+                fatigueLevel: { type: integer, minimum: 1, maximum: 10, example: 5 }
+                assignmentLoad: { type: integer, minimum: 0, example: 3 }
+                deadlinePressure: { type: integer, minimum: 1, maximum: 10, example: 7 }
+                activityStatus:
+                  type: string
+                  enum: [draft, submitted]
+                  default: submitted
+                  example: submitted
+                note:
+                  type: string
+                  maxLength: 500
+                  example: Feel a bit stressed today.
+      responses:
+        '200':
+          description: Activity updated. `prediction` is updated (or saved if it didn't exist).
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          activity:
+                            $ref: '#/components/schemas/Activity'
+                          prediction:
+                            $ref: '#/components/schemas/Prediction'
+                          mlAvailable: { type: boolean }
         '403':
           description: Not the owner
         '404':
