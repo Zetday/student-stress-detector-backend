@@ -6,6 +6,10 @@ import { useUser } from "../../contexts/UserContext";
 
 function Navbar({ title, isOpen, setIsOpen}) {
   const { user } = useUser();
+  console.log(
+  "IMAGE URL:",
+  `http://localhost:3000/uploads/images/${user.profileImage}`
+);
 
   return (
     <header
@@ -93,7 +97,11 @@ function Navbar({ title, isOpen, setIsOpen}) {
         </div>
 
         <FotoProfile
-          src={user.profileImage}
+          src={
+              user.profileImage
+                ? `http://localhost:3000/uploads/images/${user.profileImage}`
+                : null
+            }
           name={user.fullname}
           
         />

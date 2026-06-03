@@ -6,6 +6,7 @@ import PasswordCard from "../components/profile/PasswordCard";
 import DangerZoneCard from "../components/profile/DangerZoneCard";
 import Layout from "../../layouts/Layout";
 import { useUser } from "../contexts/UserContext";
+import api from "../services/api";
 
 // Dummy data untuk profile
 const profile = {
@@ -52,8 +53,6 @@ const accountStats = [
 
 function ProfilePage() {
   const { user, setUser } = useUser();
-  const [isEditingPhoto, setIsEditingPhoto] = useState(false);
-  const [isUpdatingInfo, setIsUpdatingInfo] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [hasNewPhoto, setHasNewPhoto] = useState(false);
@@ -67,6 +66,22 @@ function ProfilePage() {
 
     if (!file) return;
 
+     const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      alert("Only JPG, PNG, WEBP allowed");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Maximum file size is 5MB");
+      return;
+    }
+
     setSelectedFile(file);
 
     const imageUrl = URL.createObjectURL(file);
@@ -75,18 +90,47 @@ function ProfilePage() {
     setHasNewPhoto(true);
   };
 
-  const handleSavePhoto = () => {
-    if (!selectedImage) return;
+  const handleSavePhoto = async () => {
+    console.log("Save Photo clicked");
+    console.log(selectedFile);
+      try {
+        if (!selectedFile) return;
+        const token = localStorage.getItem("accessToken");
+        const formData = new FormData();        
+        formData.append(
+          "profilePicture",
+          selectedFile
+        );
 
-    setUser({
-      ...user,
-      profileImage: selectedImage,
-    });
+        const response = await api.put(
+          "/profiles/picture",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-    setHasNewPhoto(false);
+        const imageUrl =
+          response.data.data.profileImageUrl;
 
-    alert("Profile photo updated successfully");
-  };
+        setUser((prev) => ({
+          ...prev,
+          profileImage: imageUrl,
+        }));
+
+        setSelectedImage(null);
+        setSelectedFile(null);
+        setHasNewPhoto(false);
+
+      } catch (error) {
+        console.error(
+          "Upload avatar failed:",
+          error
+        );
+      }
+    };
 
   const handleUpdateInfo = () => {
     setIsUpdatingInfo(true);
@@ -123,7 +167,7 @@ function ProfilePage() {
             PROFILE HEADER (FULL WIDTH)
         ===================================== */}
         <ProfileAvatarCard
-          image={user.profileImage}
+          image={selectedImage || `http://localhost:3000/uploads/images/${user.profileImage}`}
           name={user.fullname || profile.name}
           role={user.role || profile.role}
           onEdit={handleEditPhoto}
@@ -141,7 +185,7 @@ function ProfilePage() {
 
             <ProfileInfoCard
               fullName={user.fullname}
-              email={profile.email}
+              email={user.email}
               onUpdate={handleUpdateInfo}
             />
 
@@ -155,7 +199,7 @@ function ProfilePage() {
           <div className="lg:col-span-1">
 
             <div className="mb-4">
-              <h2 className="theme-subtle text-[11px] font-bold uppercase tracking-[0.25em]">
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.25em] text-zinc-500">
                 Statistik Akun
               </h2>
             </div>
