@@ -194,7 +194,7 @@ function ActivityHistoryPage() {
   return (
     <Layout title="Riwayat Aktivitas" name="User" role="User">
       <div className="space-y-6 text-sm">
-          <p className="max-w-2xl text-sm text-zinc-400">
+          <p className="theme-muted max-w-2xl text-sm">
             Pantau riwayat jurnal harian yang telah Anda isi sebelumnya.
           </p>
         

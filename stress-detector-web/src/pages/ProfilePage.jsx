@@ -1,11 +1,11 @@
 import { useState } from "react";
-import ProfileHeader from "../components/profile/ProfileHeader";
 import ProfileAvatarCard from "../components/profile/ProfileAvatarCard";
 import ProfileInfoCard from "../components/profile/ProfileInfoCard";
 import AccountStatsSection from "../components/profile/AccountStatsSection";
 import PasswordCard from "../components/profile/PasswordCard";
 import DangerZoneCard from "../components/profile/DangerZoneCard";
 import Layout from "../../layouts/Layout";
+import { useUser } from "../contexts/UserContext";
 
 // Dummy data untuk profile
 const profile = {
@@ -51,13 +51,41 @@ const accountStats = [
 ];
 
 function ProfilePage() {
+  const { user, setUser } = useUser();
   const [isEditingPhoto, setIsEditingPhoto] = useState(false);
   const [isUpdatingInfo, setIsUpdatingInfo] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [hasNewPhoto, setHasNewPhoto] = useState(false);
 
   const handleEditPhoto = () => {
-    setIsEditingPhoto(true);
-    // Handle photo edit logic
-    alert("Photo edit functionality would open a modal/dialog");
+    document.getElementById("avatar-upload")?.click();
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    setSelectedFile(file);
+
+    const imageUrl = URL.createObjectURL(file);
+
+    setSelectedImage(imageUrl);
+    setHasNewPhoto(true);
+  };
+
+  const handleSavePhoto = () => {
+    if (!selectedImage) return;
+
+    setUser({
+      ...user,
+      profileImage: selectedImage,
+    });
+
+    setHasNewPhoto(false);
+
+    alert("Profile photo updated successfully");
   };
 
   const handleUpdateInfo = () => {
@@ -79,60 +107,73 @@ function ProfilePage() {
   };
 
   return (
-    <Layout title="Profile" name={profile.name} role={profile.role}>
-      <div className="space-y-6">
-        {/* Page Header */}
-        <ProfileHeader />
+    <Layout title="Profile" name={user.fullname} role={user.role}>
+      <div className="space-y-8">
 
-        {/* Main Content Grid */}
+        {/* Hidden Upload */}
+        <input
+          id="avatar-upload"
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleAvatarChange}
+        />
+
+        {/* =====================================
+            PROFILE HEADER (FULL WIDTH)
+        ===================================== */}
+        <ProfileAvatarCard
+          image={user.profileImage}
+          name={user.fullname || profile.name}
+          role={user.role || profile.role}
+          onEdit={handleEditPhoto}
+          onSavePhoto={handleSavePhoto}
+          hasNewPhoto={hasNewPhoto}
+        />
+
+        {/* =====================================
+            CONTENT AREA
+        ===================================== */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Profile Info & Password */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Profile Avatar Card */}
-            <ProfileAvatarCard
-              image={profile.avatar}
-              name={profile.name}
-              role={profile.role}
-              onEdit={handleEditPhoto}
-            />
 
-            {/* Profile Info Card */}
+          {/* LEFT COLUMN */}
+          <div className="lg:col-span-2 space-y-6">
+
             <ProfileInfoCard
-              fullName={profile.fullName}
+              fullName={user.fullname}
               email={profile.email}
               onUpdate={handleUpdateInfo}
             />
+
+            <PasswordCard
+              onSubmit={handlePasswordSubmit}
+            />
+
           </div>
 
-          {/* Right Column - Statistics */}
-          <div className="lg:col-span-2">
-            <div className="flex items-start">
-              <div className="flex-1">
-                <h2 className="text-sm uppercase text-zinc-500 mb-4">
-                  Statistik Akun
-                </h2>
-              </div>
-            </div>
-            <AccountStatsSection stats={accountStats} />
-          </div>
-        </div>
-
-        {/* Password Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* RIGHT COLUMN */}
           <div className="lg:col-span-1">
-            <PasswordCard onSubmit={handlePasswordSubmit} />
-          </div>
 
-          {/* Statistics Sidebar */}
-          <div className="lg:col-span-2">
-            {/* This could be additional stats or can be filled as needed */}
+            <div className="mb-4">
+              <h2 className="theme-subtle text-[11px] font-bold uppercase tracking-[0.25em]">
+                Statistik Akun
+              </h2>
+            </div>
+
+            <AccountStatsSection
+              stats={accountStats}
+            />
+
           </div>
         </div>
 
-        {/* Danger Zone Section */}
-        <div className="grid grid-cols-1">
-          <DangerZoneCard onDeactivate={handleDeactivateAccount} />
-        </div>
+        {/* =====================================
+            DANGER ZONE
+        ===================================== */}
+        <DangerZoneCard
+          onDeactivate={handleDeactivateAccount}
+        />
+
       </div>
     </Layout>
   );

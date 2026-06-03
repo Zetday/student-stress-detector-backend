@@ -73,7 +73,7 @@ function NewPassword() {
     <section
       className="
         min-h-screen
-        bg-[#0B0B0B]
+        theme-auth-shell
         flex justify-center
         px-4 py-10
       "
@@ -84,8 +84,8 @@ function NewPassword() {
           min-h-[720px]
           rounded-3xl
           overflow-hidden
-          bg-[#111111]
-          border border-white/5
+          theme-card
+          border
           shadow-2xl
           grid grid-cols-1 lg:grid-cols-2
         "
@@ -98,27 +98,27 @@ function NewPassword() {
           className="
             flex items-center justify-center
             px-8 md:px-16 py-12
-            bg-[#171717]
+            theme-card-muted
           "
         >
           <div className="w-full max-w-md">
             <img src={logo} alt="logo cek tenang" className="w-36 mb-10" />
 
-            <h2 className="text-4xl font-bold text-white mb-4">
+            <h2 className="theme-text text-4xl font-bold mb-4">
               {t.HeadingNewPassword}
             </h2>
 
-            <p className="text-lg text-gray-300 mb-14">
+            <p className="theme-muted text-lg mb-14">
               {t.DeskripsiNewPassword}
             </p>
 
             <div className="flex items-center gap-4 mb-14">
               <span className="text-2xl font-semibold text-blue-500">@</span>
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-500">
+                <p className="theme-subtle text-xs font-bold uppercase tracking-[0.18em]">
                   Target Email
                 </p>
-                <p className="mt-1 text-lg text-white">
+                <p className="theme-text mt-1 text-lg">
                   {targetEmail}
                 </p>
               </div>

@@ -2,16 +2,16 @@ import PropTypes from "prop-types";
 
 function ActivityHistoryPagination({ currentPage, totalPages, from, to, total, onPageChange }) {
   return (
-    <div className="flex flex-col gap-3 text-sm text-zinc-300 md:flex-row md:items-center md:justify-between">
+    <div className="theme-muted flex flex-col gap-3 text-sm md:flex-row md:items-center md:justify-between">
       <p>
-        Menampilkan <span className="text-white">{from}</span> - <span className="text-white">{to}</span> dari <span className="text-white">{total}</span> aktivitas
+        Menampilkan <span className="theme-text">{from}</span> - <span className="theme-text">{to}</span> dari <span className="theme-text">{total}</span> aktivitas
       </p>
 
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-          className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm font-semibold text-white transition hover:border-blue-400"
+          className="theme-card-muted rounded-full border px-3 py-2 text-sm font-semibold transition hover:border-blue-400"
           disabled={currentPage === 1}
         >
           Prev
@@ -25,7 +25,7 @@ function ActivityHistoryPagination({ currentPage, totalPages, from, to, total, o
             className={`rounded-full border px-3 py-2 text-sm font-semibold transition ${
               currentPage === page
                 ? "border-blue-400 bg-blue-500/10 text-blue-200"
-                : "border-zinc-800 bg-zinc-900 text-zinc-300 hover:border-zinc-600 hover:text-white"
+                : "theme-card-muted theme-muted hover:border-blue-400 hover:text-[var(--text)]"
             }`}
           >
             {page}
@@ -35,7 +35,7 @@ function ActivityHistoryPagination({ currentPage, totalPages, from, to, total, o
         <button
           type="button"
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-          className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm font-semibold text-white transition hover:border-blue-400"
+          className="theme-card-muted rounded-full border px-3 py-2 text-sm font-semibold transition hover:border-blue-400"
           disabled={currentPage === totalPages}
         >
           Next

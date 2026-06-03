@@ -34,8 +34,8 @@ function formatTime(date) {
 
 function ActivityHistoryList({ items }) {
   return (
-    <div className="overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900 text-sm">
-      <div className="hidden grid-cols-[1.3fr_2.4fr_1fr_1fr_0.9fr] gap-4 border-b border-zinc-800 px-5 py-4 text-left text-xs uppercase tracking-[0.24em] text-zinc-500 md:grid">
+    <div className="theme-card overflow-hidden rounded-3xl border text-sm">
+      <div className="theme-subtle theme-border hidden grid-cols-[1.3fr_2.4fr_1fr_1fr_0.9fr] gap-4 border-b px-5 py-4 text-left text-xs uppercase tracking-[0.24em] md:grid">
         <div>Tanggal & Waktu</div>
         <div>Preview Insight</div>
         <div>Skor Stres</div>
@@ -43,21 +43,21 @@ function ActivityHistoryList({ items }) {
         <div>Aksi</div>
       </div>
 
-      <div className="divide-y divide-zinc-800">
+      <div className="divide-y divide-[var(--border)]">
         {items.map((item) => (
           <div key={item.id} className="grid gap-3 px-5 py-4 text-sm md:grid-cols-[1.3fr_2.4fr_1fr_1fr_0.9fr] md:items-center">
             <div>
-              <p className="text-sm font-semibold text-white">{formatDate(item.datetime)}</p>
-              <p className="text-zinc-400 text-xs mt-1">{formatTime(item.datetime)} WIB</p>
+              <p className="theme-text text-sm font-semibold">{formatDate(item.datetime)}</p>
+              <p className="theme-muted text-xs mt-1">{formatTime(item.datetime)} WIB</p>
             </div>
 
             <div>
-              <p className="text-zinc-300">{item.preview}</p>
+              <p className="theme-muted">{item.preview}</p>
             </div>
 
             <div>
               <p className={`font-semibold ${scoreColor(item.stressScore)}`}>{item.stressScore}/100</p>
-              <span className="mt-1 inline-flex rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-zinc-300">
+              <span className="theme-card-muted mt-1 inline-flex rounded-full px-3 py-1 text-xs font-semibold">
                 {item.scoreLabel}
               </span>
             </div>
@@ -69,7 +69,7 @@ function ActivityHistoryList({ items }) {
             </div>
 
             <div>
-              <button className="rounded-full border border-zinc-800 bg-zinc-900 px-4 py-2 text-sm font-semibold text-blue-300 transition hover:border-blue-400 hover:text-white">
+              <button className="theme-card-muted rounded-full border px-4 py-2 text-sm font-semibold text-blue-400 transition hover:border-blue-400 hover:text-[var(--text)]">
                 Lihat Detail
               </button>
             </div>

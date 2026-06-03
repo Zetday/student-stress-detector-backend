@@ -5,6 +5,13 @@ import CacheService from '../../../cache/redis-service.js';
 
 class UserRepositories {
   constructor() {
+    console.log({
+      PGHOST: process.env.PGHOST,
+      PGPORT: process.env.PGPORT,
+      PGDATABASE: process.env.PGDATABASE,
+      PGUSER: process.env.PGUSER,
+    });
+
     this.pool = new Pool();
     this.cacheService = new CacheService();
   }

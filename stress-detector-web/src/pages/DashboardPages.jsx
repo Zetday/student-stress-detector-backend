@@ -24,19 +24,19 @@ function DashboardPage() {
 
     {/* Greeting */}
     <div className="col-span-1 lg:col-span-4">
-      <h1 className="text-2xl md:text-4xl font-bold text-white">
+      <h1 className="theme-text text-2xl md:text-4xl font-bold">
         {t.DashboardGreeting} Aryanda
       </h1>
 
     {/* Today Date */}
-      <p className="text-zinc-400 mt-1 text-sm md:text-sm">
+      <p className="theme-muted mt-1 text-sm md:text-sm">
         {formatTanggal}
       </p>
     </div>
 
     {/* Cards */}
       <div className="col-span-1 lg:col-span-4">
-        <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800">
+        <div className="theme-card rounded-2xl p-5 border">
           <div className="flex items-center gap-4">
             
             {/* Icon */}
@@ -44,17 +44,17 @@ function DashboardPage() {
               <img
                 src={calender}
                 alt="calendar"
-                className="w-8 h-8 invert"
+                className="w-8 h-8 dark:invert"
               />
             </div>
 
             {/* Text */}
             <div>
-              <h2 className="text-sm md:text-lg font-bold text-zinc-200">
+              <h2 className="theme-text text-sm md:text-lg font-bold">
                 {t.LastJournalSummaryTitle}
               </h2>
 
-              <p className="text-zinc-400 text-sm mt-1">
+              <p className="theme-muted text-sm mt-1">
                 Jumat, 17 April 2026
               </p>
             </div>
@@ -65,7 +65,7 @@ function DashboardPage() {
 
     {/* Lengkapi catatan */}
     <div className="col-span-1 lg:col-span-4">
-      <div className="bg-zinc-900 border border-orange-500/40 rounded-xl px-6 py-5">
+      <div className="theme-card border border-orange-500/40 rounded-xl px-6 py-5">
         <div className="flex items-center justify-between">
           
           {/* Left Content */}
@@ -86,7 +86,7 @@ function DashboardPage() {
                 Catatan Kemarin Belum Lengkap
               </h2>
 
-              <p className="text-zinc-500 text-sm mt-1">
+              <p className="theme-muted text-sm mt-1">
                 Lengkapi catatan aktivitas agar data diperbarui.
               </p>
             </div>
@@ -143,8 +143,8 @@ function DashboardPage() {
     </div>
 
     {/* Side Panel */}
-    <div className="bg-zinc-800 rounded-2xl p-5 md:p-6">
-      <h2 className="text-lg md:text-sm font-semibold text-white mb-6">
+    <div className="theme-card rounded-2xl p-5 md:p-6">
+      <h2 className="theme-text text-lg md:text-sm font-semibold mb-6">
         Kondisi hari ini
       </h2>
 

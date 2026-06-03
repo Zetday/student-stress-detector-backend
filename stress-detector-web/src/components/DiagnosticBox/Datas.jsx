@@ -112,12 +112,12 @@ function Datas({ title, value, metric }) {
   return (
     <div
       className="
-        bg-zinc-800 rounded-2xl p-5
+        theme-card rounded-2xl p-5
         flex flex-col gap-3
         min-h-(150px)
       "
     >
-      <span className="text-zinc-400 text-xs md:text-sm uppercase tracking-wide">
+      <span className="theme-muted text-xs md:text-sm uppercase tracking-wide">
         {title}
       </span>
 
@@ -131,7 +131,7 @@ function Datas({ title, value, metric }) {
         </span>
       </div>
 
-      <div className="w-full h-1 bg-zinc-700 rounded-full overflow-hidden mt-auto">
+      <div className="theme-card-muted w-full h-1 rounded-full overflow-hidden mt-auto">
         <div
           className={`h-full ${stress.bgcolor}`}
           style={{

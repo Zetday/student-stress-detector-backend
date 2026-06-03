@@ -44,13 +44,13 @@ function ActivityAnalysisPanel({ form, t, visible = true }) {
 
   return (
     <aside className="space-y-6">
-      <section className={`rounded-2xl bg-gradient-to-br from-zinc-800 via-zinc-800 ${stressCategory.bgcolor} p-6 md:p-7`}>
+      <section className={`theme-card rounded-2xl border bg-gradient-to-br ${stressCategory.bgcolor} p-6 md:p-7`}>
         <div className="mb-8 flex items-center justify-between gap-4">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+            <p className="theme-muted text-[11px] font-bold uppercase tracking-widest">
               {t.ActivityReviewLabel}
             </p>
-            <h2 className="mt-2 text-2xl font-bold text-white">
+            <h2 className="theme-text mt-2 text-2xl font-bold">
               {t.ActivityTodayStatusTitle}
             </h2>
           </div>
@@ -64,17 +64,17 @@ function ActivityAnalysisPanel({ form, t, visible = true }) {
             <span className={`text-7xl font-extrabold ${stressCategory.color}`}>
               {stressIndex}
             </span>
-            <span className="mt-4 text-xl font-bold text-zinc-300">%</span>
+            <span className="theme-muted mt-4 text-xl font-bold">%</span>
           </div>
           <p className={`mt-2 text-xl font-bold ${stressCategory.color}`}>
             {stressCategory.label}
           </p>
-          <p className="mx-auto mt-4 max-w-xs text-sm leading-relaxed text-zinc-400">
+          <p className="theme-muted mx-auto mt-4 max-w-xs text-sm leading-relaxed">
             {t.ActivityStressSummary}
           </p>
 
           <div className="mt-10">
-            <h3 className="mb-5 text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+            <h3 className="theme-muted mb-5 text-[11px] font-bold uppercase tracking-widest">
               {t.ActivityMainContributorTitle}
             </h3>
             <div className="space-y-4">

@@ -30,7 +30,7 @@ function ResetPassword() {
     <section
       className="
         min-h-screen
-        bg-[#0B0B0B]
+        theme-auth-shell
         flex justify-center
         px-4 py-10
       "
@@ -42,8 +42,8 @@ function ResetPassword() {
           h-auto
           rounded-3xl
           overflow-hidden
-          bg-[#111111]
-          border border-white/5
+          theme-card
+          border
           shadow-2xl
           grid grid-cols-1 lg:grid-cols-2
         "
@@ -58,7 +58,7 @@ function ResetPassword() {
           className="
             flex items-center justify-center
             px-8 md:px-16 py-12
-            bg-[#171717]">
+            theme-card-muted">
 
           <div className="w-full max-w-md">
 
@@ -66,11 +66,11 @@ function ResetPassword() {
             <img src={logo} alt="logo cek tenang" className="w-36 mb-6"/>
 
             {/* Heading */}
-            <h2 className="text-4xl font-bold text-white mb-2">
+            <h2 className="theme-text text-4xl font-bold mb-2">
               {t.HeadingResetPassword}
             </h2>
 
-            <p className="text-sm text-gray-400 mb-10">
+            <p className="theme-muted text-sm mb-10">
               {t.DeskripsiResetPassword}
             </p>
 
@@ -94,12 +94,12 @@ function ResetPassword() {
               </ButtonSubmit>
 
               {/* Switch */}
-              <p className="text-sm text-center text-gray-500 pt-2">
+              <p className="theme-muted text-sm text-center pt-2">
                 <Link
                   to="/login"
                   className="
                     text-[#9BB3FF]
-                    hover:text-white
+                    hover:text-[var(--text)]
                     transition
                     font-medium
                   "

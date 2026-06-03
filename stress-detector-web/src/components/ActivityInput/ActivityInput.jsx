@@ -5,7 +5,7 @@ function ActivityInput({ field, value, onChange }) {
     return (
       <label className={`block ${field.className || ""}`}>
         <div className="mb-4 flex items-center justify-between gap-4">
-          <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-300">
+          <span className="theme-muted text-[11px] font-bold uppercase tracking-widest">
             {field.label}
           </span>
           <span className={`text-sm font-semibold ${field.statusColor}`}>
@@ -24,7 +24,7 @@ function ActivityInput({ field, value, onChange }) {
           className="h-1 w-full cursor-pointer accent-blue-300"
         />
 
-        <div className="mt-2 flex justify-between text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
+        <div className="theme-subtle mt-2 flex justify-between text-[10px] font-semibold uppercase tracking-wide">
           <span>{field.minLabel}</span>
           <span>{field.maxLabel}</span>
         </div>
@@ -34,7 +34,7 @@ function ActivityInput({ field, value, onChange }) {
 
   return (
     <label className={`grid gap-2 ${field.className || ""}`}>
-      <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-300">
+      <span className="theme-muted text-[11px] font-bold uppercase tracking-widest">
         {field.label}
       </span>
       <div className="relative">
@@ -48,10 +48,10 @@ function ActivityInput({ field, value, onChange }) {
           onChange={onChange}
           placeholder={field.placeholder}
           required={field.required ?? true}
-          className={`h-14 w-full rounded-xl border border-zinc-800 bg-[#0F1117] px-4 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-blue-300 ${field.suffix ? "pr-16" : ""}`}
+          className={`theme-input h-14 w-full rounded-xl border px-4 text-sm outline-none transition focus:border-blue-300 ${field.suffix ? "pr-16" : ""}`}
         />
         {field.suffix && (
-          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-zinc-400">
+          <span className="theme-muted pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold">
             {field.suffix}
           </span>
         )}

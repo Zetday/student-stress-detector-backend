@@ -24,9 +24,8 @@ function Sidebar({ isOpen, setIsOpen }) {
         className={`
           fixed left-0 top-0 z-40
           flex h-screen w-52 flex-col
-          bg-[#0B0B0C]
-          px-6 py-8 text-white
-          shadow-[18px_0_40px_rgba(0,0,0,0.35)]
+          theme-sidebar
+          px-6 py-8
           transition-transform duration-300
 
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
@@ -48,12 +47,11 @@ function Sidebar({ isOpen, setIsOpen }) {
           className="
             flex h-10 w-10 items-center justify-center
             rounded-xl  
-            border border-white/5
-            bg-white/(0.03)
-            text-white/80
+            border theme-border-soft
+            theme-card-muted
+            theme-muted
             transition-all duration-200
-            hover:bg-white/(0.06)
-            hover:text-white
+            theme-hover
             md:hidden
           "
         >

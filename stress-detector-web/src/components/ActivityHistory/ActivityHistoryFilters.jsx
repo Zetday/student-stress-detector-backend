@@ -33,7 +33,7 @@ function ActivityHistoryFilters({
 }) {
   return (
     <div className="space-y-4 text-sm">
-      <div className="inline-flex w-full max-w-[620px] items-center gap-1 rounded-2xl border border-zinc-800 bg-zinc-900 p-1">
+      <div className="theme-card inline-flex w-full max-w-[620px] items-center gap-1 rounded-2xl border p-1">
         {statusOptions.map((option) => (
           <button
             key={option.value}
@@ -42,7 +42,7 @@ function ActivityHistoryFilters({
             className={`flex-1 rounded-xl px-6 py-4 text-sm font-semibold transition-all duration-200 ${
               statusFilter === option.value
                 ? "bg-blue-400 text-slate-900 shadow-sm"
-                : "bg-transparent text-zinc-400 hover:text-white"
+                : "bg-transparent theme-muted hover:text-[var(--text)]"
             }`}
           >
             {option.label}
@@ -54,7 +54,7 @@ function ActivityHistoryFilters({
           <select
             value={dateFilter}
             onChange={(event) => setDateFilter(event.target.value)}
-            className="h-11 min-w-(140px) rounded-xl border border-zinc-800 bg-zinc-900 px-4 text-sm text-white outline-none transition focus:border-zinc-700"
+            className="theme-input h-11 min-w-(140px) rounded-xl border px-4 text-sm outline-none transition focus:border-blue-400"
           >
             <img src={calender} alt="" />
             {dateOptions.map((option) => (
@@ -67,7 +67,7 @@ function ActivityHistoryFilters({
           <select
             value={sortOption}
             onChange={(event) => setSortOption(event.target.value)}
-            className="mt-2 w-30 rounded-2xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition focus:border-blue-400"
+            className="theme-input mt-2 w-30 rounded-2xl border px-4 py-3 text-sm outline-none transition focus:border-blue-400"
           >
             {sortOptions.map((option) => (
               <option key={option.value} value={option.value}>

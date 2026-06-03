@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createActivity } from "../../services/activityService";
 import { initialActivityForm } from "./activityFormConstants";
 import buildActivityPayload from "./buildActivityPayload";
@@ -6,28 +6,26 @@ import buildActivityPayload from "./buildActivityPayload";
 const DRAFT_KEY = "activityDraft";
 
 function useActivityForm(t) {
-  const [form, setForm] = useState(initialActivityForm);
+  const [form, setForm] = useState(() => {
+    const draft = localStorage.getItem(DRAFT_KEY);
+    if (!draft) {
+      return initialActivityForm;
+    }
+
+    try {
+      return {
+        ...initialActivityForm,
+        ...JSON.parse(draft),
+      };
+    } catch {
+      localStorage.removeItem(DRAFT_KEY);
+      return initialActivityForm;
+    }
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [showAnalysis, setShowAnalysis] = useState(false);
-
-  useEffect(() => {
-    const draft = localStorage.getItem(DRAFT_KEY);
-    if (!draft) {
-      return;
-    }
-
-    try {
-      const parsedDraft = JSON.parse(draft);
-      setForm((currentForm) => ({
-        ...currentForm,
-        ...parsedDraft,
-      }));
-    } catch {
-      localStorage.removeItem(DRAFT_KEY);
-    }
-  }, []);
 
   function handleChange(event) {
     const { name, value } = event.target;

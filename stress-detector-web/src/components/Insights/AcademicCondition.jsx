@@ -33,8 +33,8 @@ const data = [
 
 function AcademicCondition({ items = data }) {
   return (
-    <div className="bg-zinc-900/70 border border-white/10 rounded-2xl p-6">
-      <h3 className="font-semibold text-xl mb-8 text-white">
+    <div className="theme-card border rounded-2xl p-6">
+      <h3 className="theme-text font-semibold text-xl mb-8">
         Rata-Rata Kondisi Akademik
       </h3>
 
@@ -42,11 +42,11 @@ function AcademicCondition({ items = data }) {
         {items.map((item) => (
           <div key={item.label}>
             <div className="flex justify-between text-xs mb-2">
-              <span className="text-zinc-300">{item.label}</span>
-              <span className="text-zinc-400">{item.value}</span>
+              <span className="theme-muted">{item.label}</span>
+              <span className="theme-muted">{item.value}</span>
             </div>
 
-            <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+            <div className="theme-card-muted h-1.5 rounded-full overflow-hidden">
               <div
                 className={`h-full rounded-full ${item.color}`}
                 style={{ width: item.width }}

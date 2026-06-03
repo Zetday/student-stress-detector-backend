@@ -88,10 +88,10 @@ function InsightPage() {
       <div className="space-y-6">
         {/* Header Section */}
         <div>
-          <p className="text-xs uppercase text-zinc-500 mb-2">
+          <p className="theme-subtle text-xs uppercase mb-2">
             Insights & Academic Analytics
           </p>
-          <h1 className="text-3xl md:text-4xl font-bold text-white">
+          <h1 className="theme-text text-3xl md:text-4xl font-bold">
             Insights Akademik & Lifestyle
           </h1>
         </div>
@@ -129,7 +129,7 @@ function InsightPage() {
 
         {/* Section 5: Prioritas Hari Ini */}
         <div>
-          <h2 className="text-2xl font-bold text-white mb-4">
+          <h2 className="theme-text text-2xl font-bold mb-4">
             Prioritas Hari Ini
           </h2>
           <div className="grid lg:grid-cols-2 gap-4">

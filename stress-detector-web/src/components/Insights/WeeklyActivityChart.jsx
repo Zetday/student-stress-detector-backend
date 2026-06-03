@@ -6,6 +6,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useTheme } from "../../contexts/ThemeContext";
 
 const data = [
   { day: "SEN", value: 58 },
@@ -18,9 +19,20 @@ const data = [
 ];
 
 function WeeklyActivityChart() {
+  const { theme } = useTheme();
+  const rootStyle = typeof window !== "undefined"
+    ? getComputedStyle(document.documentElement)
+    : null;
+  const themeColors = {
+    textMuted: rootStyle?.getPropertyValue("--text-muted").trim() || "#71717a",
+    tooltipBg: rootStyle?.getPropertyValue("--chart-tooltip-bg").trim() || "#1f2937",
+    tooltipBorder: rootStyle?.getPropertyValue("--chart-tooltip-border").trim() || "#3f3f46",
+  };
+  void theme;
+
   return (
-    <div className="bg-zinc-900/70 border border-white/10 rounded-2xl p-6">
-      <h3 className="font-semibold text-xl mb-5 text-white">
+    <div className="theme-card border rounded-2xl p-6">
+      <h3 className="theme-text font-semibold text-xl mb-5">
         Metrik Aktivitas Mingguan
       </h3>
 
@@ -29,17 +41,17 @@ function WeeklyActivityChart() {
           <LineChart data={data}>
             <XAxis
               dataKey="day"
-              stroke="#71717a"
+              stroke={themeColors.textMuted}
               style={{ fontSize: "12px" }}
             />
             <YAxis
-              stroke="#71717a"
+              stroke={themeColors.textMuted}
               style={{ fontSize: "12px" }}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: "#1f2937",
-                border: "1px solid #3f3f46",
+                backgroundColor: themeColors.tooltipBg,
+                border: `1px solid ${themeColors.tooltipBorder}`,
                 borderRadius: "8px",
               }}
             />

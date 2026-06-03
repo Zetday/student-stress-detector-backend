@@ -9,10 +9,9 @@ import YAML from 'yamljs';
 const swaggerDocument = YAML.load('./swagger.yaml');
 
 const app = express();
-
 app.use(
   cors({
-    origin: '*',
+    origin: 'http://localhost:5173',
     credentials: true,
   }),
 );

@@ -11,8 +11,8 @@ function StatsCard({
   const isTrendUp = trend && trend > 0;
   
   return (
-    <div className="bg-zinc-900/70 border border-white/10 rounded-2xl p-5">
-      <p className="text-xs uppercase text-zinc-400 mb-3">
+    <div className="theme-card border rounded-2xl p-5">
+      <p className="theme-muted text-xs uppercase mb-3">
         {title}
       </p>
 
@@ -21,13 +21,13 @@ function StatsCard({
           {value}
         </h2>
 
-        <span className="text-zinc-400 mb-2">
+        <span className="theme-muted mb-2">
           /{maxScore}
         </span>
       </div>
 
       <div className="flex items-center justify-between mt-3">
-        <p className="text-sm text-zinc-500">
+        <p className="theme-subtle text-sm">
           {subtitle}
         </p>
         

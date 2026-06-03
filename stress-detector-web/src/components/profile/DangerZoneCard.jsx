@@ -7,7 +7,7 @@ function DangerZoneCard({ onDeactivate }) {
           <h3 className="text-xl font-semibold text-red-400 mb-2">
             Danger Zone
           </h3>
-          <p className="text-sm text-zinc-300">
+          <p className="theme-muted text-sm">
             Deactivating your account will permanently delete all clinical stress
             history and data insights.
           </p>

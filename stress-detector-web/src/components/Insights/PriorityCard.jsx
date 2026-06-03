@@ -21,25 +21,25 @@ function PriorityCard({
   };
 
   return (
-    <div className="bg-zinc-900/70 border border-white/10 rounded-2xl p-5">
+    <div className="theme-card border rounded-2xl p-5">
       <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${getLevelColor(level)}`}>
         {level}
       </span>
 
-      <h4 className="font-semibold text-xl mt-4 text-white">
+      <h4 className="theme-text font-semibold text-xl mt-4">
         {title}
       </h4>
 
-      <p className="text-zinc-400 mt-3 text-sm">
+      <p className="theme-muted mt-3 text-sm">
         {description}
       </p>
 
-      <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/5">
+      <div className="theme-border-soft flex items-center justify-between mt-6 pt-4 border-t">
         <div className="flex items-center gap-2 text-blue-300 text-sm">
           <Clock size={16} />
           <span>{stressImpact}</span>
         </div>
-        <span className="text-zinc-500 text-xs">
+        <span className="theme-subtle text-xs">
           {duration}
         </span>
       </div>

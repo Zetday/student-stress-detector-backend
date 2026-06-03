@@ -1,45 +1,95 @@
+import { Mail, User, ChevronRight } from "lucide-react";
+
 function ProfileInfoCard({
   fullName = "Aryanda Sanggadiennata",
   email = "aryanda@email.com",
   onUpdate,
 }) {
   return (
-    <div className="bg-zinc-900/70 border border-white/10 rounded-2xl p-6">
-      <h3 className="text-xl font-semibold text-white mb-6">
-        Informasi Akun
-      </h3>
+    <div className="theme-card rounded-3xl border backdrop-blur-xl overflow-hidden">
 
-      <div className="space-y-6">
+      {/* Header */}
+      <div className="theme-border-soft p-6 border-b">
+        <p className="text-[11px] uppercase tracking-[0.25em] text-blue-400 mb-2">
+          Account Information
+        </p>
+
+        <h3 className="theme-text text-2xl font-bold">
+          Informasi Akun
+        </h3>
+
+        <p className="theme-muted text-sm mt-1">
+          Kelola informasi profil dan data akun Anda.
+        </p>
+      </div>
+
+      {/* Content */}
+      <div className="p-6 space-y-4">
+
         {/* Full Name */}
-        <div>
-          <p className="text-xs uppercase text-zinc-500 mb-2">
-            Full Name
-          </p>
-          <p className="text-base text-white">
-            {fullName}
-          </p>
-          <div className="mt-3 h-px bg-zinc-800" />
+        <div className="theme-card-muted group flex items-center justify-between rounded-2xl border px-5 py-4 hover:border-blue-500/20 transition-all">
+
+          <div className="flex items-center gap-4">
+
+            <div className="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center">
+              <User size={18} className="text-blue-400" />
+            </div>
+
+            <div>
+              <p className="theme-subtle text-xs uppercase tracking-wider">
+                Full Name
+              </p>
+
+              <p className="theme-text font-medium mt-1">
+                {fullName}
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Email Address */}
-        <div>
-          <p className="text-xs uppercase text-zinc-500 mb-2">
-            Email Address
-          </p>
-          <p className="text-base text-white">
-            {email}
-          </p>
-          <div className="mt-3 h-px bg-zinc-800" />
+        {/* Email */}
+        <div className="theme-card-muted group flex items-center justify-between rounded-2xl border px-5 py-4 hover:border-blue-500/20 transition-all">
+
+          <div className="flex items-center gap-4">
+
+            <div className="w-11 h-11 rounded-xl bg-green-500/10 flex items-center justify-center">
+              <Mail size={18} className="text-green-400" />
+            </div>
+
+            <div>
+              <p className="theme-subtle text-xs uppercase tracking-wider">
+                Email Address
+              </p>
+
+              <p className="theme-text font-medium mt-1">
+                {email}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Update Button */}
-      <button
-        onClick={onUpdate}
-        className="mt-6 px-6 py-2 bg-blue-600 hover:bg-blue-700 transition-colors rounded-lg text-sm text-white font-medium"
-      >
-        Update Information
-      </button>
+      {/* Footer */}
+      <div className="px-6 pb-6">
+        <button
+          onClick={onUpdate}
+          className="
+            w-full sm:w-auto
+            inline-flex items-center justify-center gap-2
+            px-6 py-3
+            rounded-xl
+            bg-blue-500
+            hover:bg-blue-600
+            transition-all
+            text-white
+            font-medium
+            shadow-lg shadow-blue-500/20
+          "
+        >
+          Update Information
+          <ChevronRight size={16} />
+        </button>
+      </div>
     </div>
   );
 }
