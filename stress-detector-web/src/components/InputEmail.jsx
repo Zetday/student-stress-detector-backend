@@ -3,17 +3,17 @@ import PropTypes from "prop-types";
 function InputEmail({ value, onChange, children, placeholder, error }) {
   return (
     <div>
-      <label className="text-xs font-semibold tracking-wide text-gray-500">{children}</label>
+      <label className="theme-muted text-xs font-semibold tracking-wide">{children}</label>
       <input
         type="email"
         autoComplete="email"
         placeholder={placeholder}
          className="
           w-full mt-1 px-4 py-3 rounded-xl 
-          bg-gray-200 border border-gray-200 
+          theme-input border
           
-          text-sm text-black
-          placeholder:text-sm placeholder:text-gray-400
+          text-sm
+          placeholder:text-sm
           
           focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
         value={value}

@@ -1,10 +1,4 @@
-import getRangeStatus from "./getRangeStatus";
-
-function getRangeFields(t, form) {
-  const assignmentStatus = getRangeStatus(form.assignmentLoad, t);
-  const deadlineStatus = getRangeStatus(form.deadlinePressure, t);
-  const fatigueStatus = getRangeStatus(form.fatigueLevel, t);
-
+function getRangeFields(t) {
   return [
     {
       name: "assignmentLoad",

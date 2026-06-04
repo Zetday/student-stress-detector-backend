@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   login,
+  loginWithGoogle,
   refreshToken,
   logout,
   forgotPassword,
@@ -9,6 +10,7 @@ import {
 import { validate } from '../../../middlewares/validate.js';
 import {
   postAuthenticationPayloadSchema,
+  postGoogleAuthenticationPayloadSchema,
   putAuthenticationPayloadSchema,
   deleteAuthenticationPayloadSchema,
   forgotPasswordPayloadSchema,
@@ -21,6 +23,11 @@ router.post(
   '/',
   validate(postAuthenticationPayloadSchema),
   login
+);
+router.post(
+  '/google',
+  validate(postGoogleAuthenticationPayloadSchema),
+  loginWithGoogle
 );
 router.put(
   '/',

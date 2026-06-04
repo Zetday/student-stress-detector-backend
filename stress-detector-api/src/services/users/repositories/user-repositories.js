@@ -5,6 +5,13 @@ import CacheService from '../../../cache/redis-service.js';
 
 class UserRepositories {
   constructor() {
+    console.log({
+      PGHOST: process.env.PGHOST,
+      PGPORT: process.env.PGPORT,
+      PGDATABASE: process.env.PGDATABASE,
+      PGUSER: process.env.PGUSER,
+    });
+
     this.pool = new Pool();
     this.cacheService = new CacheService();
   }
@@ -35,6 +42,16 @@ class UserRepositories {
     const result = await this.pool.query(query);
 
     return result.rows.length > 0;
+  }
+
+  async getUserIdByEmail(email) {
+    const query = {
+      text: 'SELECT id FROM users WHERE email = $1',
+      values: [email],
+    };
+
+    const result = await this.pool.query(query);
+    return result.rows[0]?.id || null;
   }
 
   async getUserById(id) {

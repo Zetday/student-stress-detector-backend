@@ -1,7 +1,9 @@
 // Sistem
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import useInput from "../../hooks/useInput";
 import { useLanguage } from "../contexts/LanguageContext";
+import { requestPasswordReset } from "../services/authService";
 
 // Asset
 import logo from "../assets/img/logo.png";
@@ -15,22 +17,48 @@ import LeftPanel from "../../layouts/LeftPanel";
 
 function ResetPassword() {
   const [email, onEmailChange] = useInput("");
+  const [emailError, setEmailError] = useState("");
+  const [apiMessage, setApiMessage] = useState("");
+  const [apiError, setApiError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { t } = useLanguage();
 
-  function onSubmitHandler(e) {
-    e.preventDefault();
+  function handleEmailChange(e) {
+    onEmailChange(e);
+    setEmailError("");
+    setApiError("");
+    setApiMessage("");
+  }
 
-    console.log({
-      email,
-    });
+  async function onSubmitHandler(e) {
+    e.preventDefault();
+    setEmailError("");
+    setApiError("");
+    setApiMessage("");
+
+    if (!email.trim()) {
+      setEmailError("Email wajib diisi.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    const { error, message } = await requestPasswordReset({ email });
+    setIsSubmitting(false);
+
+    if (error) {
+      setApiError(message || "Gagal mengirim tautan pemulihan.");
+      return;
+    }
+
+    setApiMessage(message || "Tautan pemulihan telah dikirim ke email Anda.");
   }
 
   return (
     <section
       className="
         min-h-screen
-        bg-[#0B0B0B]
+        theme-auth-shell
         flex justify-center
         px-4 py-10
       "
@@ -42,8 +70,8 @@ function ResetPassword() {
           h-auto
           rounded-3xl
           overflow-hidden
-          bg-[#111111]
-          border border-white/5
+          theme-card
+          border
           shadow-2xl
           grid grid-cols-1 lg:grid-cols-2
         "
@@ -58,7 +86,7 @@ function ResetPassword() {
           className="
             flex items-center justify-center
             px-8 md:px-16 py-12
-            bg-[#171717]">
+            theme-card-muted">
 
           <div className="w-full max-w-md">
 
@@ -66,11 +94,11 @@ function ResetPassword() {
             <img src={logo} alt="logo cek tenang" className="w-36 mb-6"/>
 
             {/* Heading */}
-            <h2 className="text-4xl font-bold text-white mb-2">
+            <h2 className="theme-text text-4xl font-bold mb-2">
               {t.HeadingResetPassword}
             </h2>
 
-            <p className="text-sm text-gray-400 mb-10">
+            <p className="theme-muted text-sm mb-10">
               {t.DeskripsiResetPassword}
             </p>
 
@@ -83,23 +111,36 @@ function ResetPassword() {
               {/* Email */}
               <InputEmail
                 value={email}
-                onChange={onEmailChange}
+                onChange={handleEmailChange}
+                error={emailError}
                 placeholder={t.InputEmail}
                 children="Email"
               />
 
+              {apiError && (
+                <p className="text-sm text-red-500">
+                  {apiError}
+                </p>
+              )}
+
+              {apiMessage && (
+                <p className="text-sm text-green-500">
+                  {apiMessage}
+                </p>
+              )}
+
               {/* Submit */}
-              <ButtonSubmit type="submit">
-                {t.ButtonResetPassword}
+              <ButtonSubmit type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Mengirim..." : t.ButtonResetPassword}
               </ButtonSubmit>
 
               {/* Switch */}
-              <p className="text-sm text-center text-gray-500 pt-2">
+              <p className="theme-muted text-sm text-center pt-2">
                 <Link
                   to="/login"
                   className="
                     text-[#9BB3FF]
-                    hover:text-white
+                    hover:text-[var(--text)]
                     transition
                     font-medium
                   "

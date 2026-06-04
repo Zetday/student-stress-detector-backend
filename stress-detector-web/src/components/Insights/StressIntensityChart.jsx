@@ -4,6 +4,7 @@ import {
   Cell,
   ResponsiveContainer,
 } from "recharts";
+import { useTheme } from "../../contexts/ThemeContext";
 
 const chartData = [
   { name: "Tinggi", value: 33 },
@@ -18,13 +19,16 @@ const COLORS = [
 ];
 
 function StressIntensityChart({ avgScore = 74 }) {
+  const { theme } = useTheme();
+  void theme;
+
   const renderCustomLabel = () => (
     <text
       x="50%"
       y="50%"
       textAnchor="middle"
       dominantBaseline="middle"
-      className="fill-white"
+      className="fill-[var(--text)]"
       style={{ fontSize: "24px", fontWeight: "bold" }}
     >
       {avgScore}
@@ -32,8 +36,8 @@ function StressIntensityChart({ avgScore = 74 }) {
   );
 
   return (
-    <div className="bg-zinc-900/70 border border-white/10 rounded-2xl p-6">
-      <h3 className="font-semibold text-xl mb-4 text-white">
+    <div className="theme-card border rounded-2xl p-6">
+      <h3 className="theme-text font-semibold text-xl mb-4">
         Intensitas Stres
       </h3>
 
@@ -66,10 +70,10 @@ function StressIntensityChart({ avgScore = 74 }) {
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: COLORS[i] }}
             />
-            <span className="text-sm text-zinc-300">
+            <span className="theme-muted text-sm">
               {item.name}
             </span>
-            <span className="text-sm text-zinc-500 ml-auto">
+            <span className="theme-subtle text-sm ml-auto">
               {item.value}%
             </span>
           </div>

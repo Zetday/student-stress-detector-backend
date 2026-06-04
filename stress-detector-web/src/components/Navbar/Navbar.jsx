@@ -1,9 +1,18 @@
-import PropTypes, { bool, func } from "prop-types";
+import PropTypes from "prop-types";
 import Buttons from "./Buttons";
 import FotoProfile from "./FotoProfile";
 import NameDisplay from "./NameDisplay";
+import { useUser } from "../../contexts/UserContext";
 
-function Navbar({ title, name, role, profilePhoto, isOpen, setIsOpen}) {
+function Navbar({ title, isOpen, setIsOpen}) {
+  const { user } = useUser();
+
+  const profileSrc = user.profileImage
+    ? user.profileImage.startsWith("http")
+      ? user.profileImage
+      : `${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"}/uploads/images/${encodeURIComponent(user.profileImage)}`
+    : null;
+
   return (
     <header
       className="
@@ -15,12 +24,11 @@ function Navbar({ title, name, role, profilePhoto, isOpen, setIsOpen}) {
 
         flex h-15 items-center justify-between
 
-        border-b border-white/5
-        bg-[#141414]/95
+        theme-navbar
+        border-b
         backdrop-blur
 
         px-4 md:px-6 lg:px-12
-        text-white
       "
     >
     {/* LEFT */}
@@ -33,16 +41,14 @@ function Navbar({ title, name, role, profilePhoto, isOpen, setIsOpen}) {
             className="
               flex h-11 w-11 items-center justify-center
               rounded-xl
-              border border-white/5
-              bg-white/(0.03)
-
-              text-white/80
+              border theme-border-soft
+              theme-card-muted
+              theme-muted
               backdrop-blur-sm
 
               transition-all duration-200
 
-              hover:bg-white/(0.06)
-              hover:text-white
+              theme-hover
 
               active:scale-95
 
@@ -82,14 +88,21 @@ function Navbar({ title, name, role, profilePhoto, isOpen, setIsOpen}) {
     <div className="flex items-center gap-3 md:gap-5">
       <Buttons />
 
-      <div className="hidden h-12 w-px bg-white/10 md:block" />
+      <div className="theme-divider hidden h-12 w-px md:block" />
 
       <div className="flex items-center gap-3">
-        <div className="hidden sm:block">
-          <NameDisplay name={name} role={role} />
+        <div className="sm:block">
+          <NameDisplay 
+            name={user.fullname || "User"}
+            role={user.role || "User"}
+          />
         </div>
 
-        <FotoProfile src={profilePhoto} name={name} />
+        <FotoProfile
+          src={profileSrc}
+          name={user.fullname}
+          
+        />
       </div>
     </div>
   </header>
@@ -98,11 +111,8 @@ function Navbar({ title, name, role, profilePhoto, isOpen, setIsOpen}) {
 
 Navbar.propTypes = {
   title: PropTypes.string,
-  name: PropTypes.string,
-  role: PropTypes.string,
-  profilePhoto: PropTypes.string,
-  isOpen: PropTypes,bool,
-  setIsOpen: PropTypes,func,
+  isOpen: PropTypes.bool,
+  setIsOpen: PropTypes.func,
 };
 
 export default Navbar;

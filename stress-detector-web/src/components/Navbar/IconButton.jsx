@@ -8,9 +8,9 @@ function IconButton({ children, label, onClick }) {
       className="
         grid h-10 w-10 place-items-center
         rounded-full
-        text-zinc-400
+        theme-muted
         transition
-        hover:bg-zinc-800 hover:text-white
+        theme-hover
       "
     >
       {children}

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
-function PasswordCard({ onSubmit }) {
+function PasswordCard({ onSubmit, error, success }) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -30,15 +30,15 @@ function PasswordCard({ onSubmit }) {
   };
 
   return (
-    <div className="bg-zinc-900/70 border border-white/10 rounded-2xl p-6">
-      <h3 className="text-xl font-semibold text-white mb-6">
+    <div className="theme-card border rounded-2xl p-6">
+      <h3 className="theme-text text-xl font-semibold mb-6">
         Ubah Password
       </h3>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Current Password */}
         <div>
-          <label className="text-xs uppercase text-zinc-500 mb-2 block">
+          <label className="theme-subtle text-xs uppercase mb-2 block">
             Current Password
           </label>
           <div className="relative">
@@ -47,12 +47,12 @@ function PasswordCard({ onSubmit }) {
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="Masukkan password saat ini"
-              className="w-full px-4 py-3 rounded-lg bg-zinc-800/50 border border-white/10 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              className="theme-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
             />
             <button
               type="button"
               onClick={() => toggleVisibility("current")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition"
+              className="theme-muted absolute right-3 top-1/2 -translate-y-1/2 hover:text-(--text) transition"
             >
               {showPasswords.current ? (
                 <EyeOff size={18} />
@@ -67,7 +67,7 @@ function PasswordCard({ onSubmit }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* New Password */}
           <div>
-            <label className="text-xs uppercase text-zinc-500 mb-2 block">
+            <label className="theme-subtle text-xs uppercase mb-2 block">
               New Password
             </label>
             <div className="relative">
@@ -76,12 +76,12 @@ function PasswordCard({ onSubmit }) {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Masukkan password baru"
-                className="w-full px-4 py-3 rounded-lg bg-zinc-800/50 border border-white/10 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="theme-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
               />
               <button
                 type="button"
                 onClick={() => toggleVisibility("new")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition"
+                className="theme-muted absolute right-3 top-1/2 -translate-y-1/2 hover:text-(--text) transition"
               >
                 {showPasswords.new ? (
                   <EyeOff size={18} />
@@ -94,7 +94,7 @@ function PasswordCard({ onSubmit }) {
 
           {/* Confirm Password */}
           <div>
-            <label className="text-xs uppercase text-zinc-500 mb-2 block">
+            <label className="theme-subtle text-xs uppercase mb-2 block">
               Confirm Password
             </label>
             <div className="relative">
@@ -103,12 +103,12 @@ function PasswordCard({ onSubmit }) {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Konfirmasi password baru"
-                className="w-full px-4 py-3 rounded-lg bg-zinc-800/50 border border-white/10 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="theme-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
               />
               <button
                 type="button"
                 onClick={() => toggleVisibility("confirm")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition"
+                className="theme-muted absolute right-3 top-1/2 -translate-y-1/2 hover:text-(--text) transition"
               >
                 {showPasswords.confirm ? (
                   <EyeOff size={18} />
@@ -121,13 +121,19 @@ function PasswordCard({ onSubmit }) {
         </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end pt-4">
+        <div className="flex flex-col gap-3 pt-4">
           <button
             type="submit"
-            className="px-8 py-2 border border-white/20 rounded-lg text-white hover:border-white/40 hover:bg-white/5 transition-all duration-300 text-sm font-medium"
+            className="theme-card-muted px-8 py-2 border rounded-lg transition-all duration-300 text-sm font-medium theme-hover"
           >
             Reset Password
           </button>
+          {error && (
+            <p className="text-sm text-red-500">{error}</p>
+          )}
+          {success && (
+            <p className="text-sm text-green-500">{success}</p>
+          )}
         </div>
       </form>
     </div>

@@ -11,7 +11,7 @@ function AccountStatCard({
   showIcon = false,
 }) {
   return (
-    <div className="bg-zinc-900/70 border border-white/10 rounded-2xl p-6 relative overflow-hidden">
+    <div className="theme-card border rounded-2xl p-6 relative overflow-hidden">
       {/* Optional Icon in top-right corner */}
       {showIcon && icon && (
         <div className="absolute top-4 right-4 text-yellow-400 opacity-30">
@@ -21,18 +21,18 @@ function AccountStatCard({
 
       <div className="relative z-10">
         {/* Title */}
-        <p className="text-xs uppercase text-zinc-500 mb-4">
+        <p className="theme-subtle text-xs uppercase mb-4">
           {title}
         </p>
 
         {/* Value Section */}
         <div className="mb-3">
           <div className="flex items-baseline gap-1">
-            <h3 className="text-4xl font-bold text-white">
+            <h3 className="theme-text text-4xl font-bold">
               {value}
             </h3>
             {suffix && (
-              <span className="text-zinc-400 text-sm">
+              <span className="theme-muted text-sm">
                 {suffix}
               </span>
             )}
@@ -59,13 +59,13 @@ function AccountStatCard({
         {/* Progress Bar */}
         {progress !== undefined && (
           <div className="mt-4">
-            <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+            <div className="theme-card-muted h-1.5 rounded-full overflow-hidden">
               <div
                 className="h-full bg-blue-400 rounded-full transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-xs text-zinc-500 mt-2">
+            <p className="theme-subtle text-xs mt-2">
               {progress}% progress
             </p>
           </div>
@@ -78,7 +78,7 @@ function AccountStatCard({
               <div
                 key={i}
                 className={`h-2 flex-1 rounded-full ${
-                  i < 5 ? "bg-blue-400" : "bg-zinc-800"
+                  i < 5 ? "bg-blue-400" : "theme-card-muted"
                 }`}
               />
             ))}

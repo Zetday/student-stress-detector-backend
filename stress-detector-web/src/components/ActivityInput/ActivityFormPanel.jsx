@@ -3,32 +3,32 @@ import ActivityInput from "./ActivityInput";
 import getInputFields from "./getInputFields";
 import getRangeFields from "./getRangeFields";
 
-function getBadgeByValue(value, fieldName) {
+function getBadgeByValue(value, fieldName, t) {
   const score = Number(value) || 0;
 
   if (score <= 3) {
     return {
-      label: fieldName === "moodScore" ? "Baik" : "Rendah",
+      label: fieldName === "moodScore" ? t.ActivityBadgeGood : t.ActivityBadgeLow,
       badgeClass: "bg-green-500/20 text-green-400",
     };
   }
 
   if (score <= 6) {
     return {
-      label: "Sedang",
+      label: t.ActivityBadgeMedium,
       badgeClass: "bg-yellow-500/20 text-yellow-400",
     };
   }
 
   if (score <= 8) {
     return {
-      label: "Cukup Tinggi",
+      label: t.ActivityBadgeQuiteHigh,
       badgeClass: "bg-orange-500/20 text-orange-400",
     };
   }
 
   return {
-    label: fieldName === "moodScore" ? "Sangat Baik" : "Sangat Tinggi",
+    label: fieldName === "moodScore" ? t.ActivityBadgeVeryGood : t.ActivityBadgeVeryHigh,
     badgeClass: "bg-cyan-500/20 text-cyan-400",
   };
 }
@@ -45,12 +45,12 @@ function ActivityFormPanel({ error, form, isSubmitting, message, onChange, onSav
   );
 
   return (
-    <section className="w-full space-y-6 rounded-2xl bg-[#141414] p-5 md:p-7">
+    <section className="theme-card w-full space-y-6 rounded-2xl p-5 md:p-7">
       <div className="space-y-4">
         <div>
-          <h2 className="text-2xl font-semibold text-white">Aktivitas Harian</h2>
-          <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-            Lengkapi data aktivitas Anda untuk mendapatkan prediksi stres yang lebih akurat.
+          <h2 className="theme-text text-2xl font-semibold">{t.ActivityDailySectionTitle}</h2>
+          <p className="theme-muted mt-2 text-sm leading-relaxed">
+            {t.ActivityDailySectionDescription}
           </p>
         </div>
 
@@ -58,16 +58,16 @@ function ActivityFormPanel({ error, form, isSubmitting, message, onChange, onSav
           {mainFields.map((field) => (
             <div
               key={field.name}
-              className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5"
+              className="theme-card-muted rounded-2xl border p-5"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-zinc-400">
+                  <p className="theme-muted text-xs font-semibold uppercase tracking-[0.3em]">
                     {field.label}
                   </p>
-                  <p className="mt-2 text-sm text-zinc-500">{field.description}</p>
+                  <p className="theme-subtle mt-2 text-sm">{field.description}</p>
                 </div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-zinc-800 text-lg">
+                <div className="theme-accent-bg flex h-10 w-10 items-center justify-center rounded-2xl text-lg">
                   {field.icon}
                 </div>
               </div>
@@ -86,9 +86,9 @@ function ActivityFormPanel({ error, form, isSubmitting, message, onChange, onSav
 
       <div className="space-y-4">
         <div>
-          <h2 className="text-2xl font-semibold text-white">Aktivitas Digital</h2>
-          <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-            Catat durasi penggunaan layar dan media sosial Anda.
+          <h2 className="theme-text text-2xl font-semibold">{t.ActivityDigitalSectionTitle}</h2>
+          <p className="theme-muted mt-2 text-sm leading-relaxed">
+            {t.ActivityDigitalSectionDescription}
           </p>
         </div>
 
@@ -96,16 +96,16 @@ function ActivityFormPanel({ error, form, isSubmitting, message, onChange, onSav
           {digitalFields.map((field) => (
             <div
               key={field.name}
-              className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5"
+              className="theme-card-muted rounded-2xl border p-5"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-zinc-400">
+                  <p className="theme-muted text-xs font-semibold uppercase tracking-[0.3em]">
                     {field.label}
                   </p>
-                  <p className="mt-2 text-sm text-zinc-500">{field.description}</p>
+                  <p className="theme-subtle mt-2 text-sm">{field.description}</p>
                 </div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-zinc-800 text-lg">
+                <div className="theme-accent-bg flex h-10 w-10 items-center justify-center rounded-2xl text-lg">
                   {field.icon}
                 </div>
               </div>
@@ -122,30 +122,30 @@ function ActivityFormPanel({ error, form, isSubmitting, message, onChange, onSav
         </div>
       </div>
 
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 md:p-8">
+      <div className="theme-card-muted rounded-2xl border p-6 md:p-8">
         <div className="mb-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-zinc-400">
-            Kondisi Akademik & Personal
+          <p className="theme-muted text-sm font-semibold uppercase tracking-[0.25em]">
+            {t.ActivityConditionSectionTitle}
           </p>
-          <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-            Geser slider sesuai kondisi Anda kemarin.
+          <p className="theme-muted mt-2 text-sm leading-relaxed">
+            {t.ActivityConditionSectionDescription}
           </p>
         </div>
 
         <div className="space-y-6">
           {rangeFields.map((field) => {
-            const { label, badgeClass } = getBadgeByValue(form[field.name], field.name);
+            const { label, badgeClass } = getBadgeByValue(form[field.name], field.name, t);
 
             return (
-              <div key={field.name} className="space-y-4 rounded-2xl bg-[#0F1117] p-5">
+              <div key={field.name} className="theme-card space-y-4 rounded-2xl p-5">
                 <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] items-start">
                   <div>
-                    <p className="text-sm font-semibold text-white">{field.label}</p>
-                    <p className="mt-1 text-xs text-zinc-400">{field.description}</p>
+                    <p className="theme-text text-sm font-semibold">{field.label}</p>
+                    <p className="theme-muted mt-1 text-xs">{field.description}</p>
                   </div>
 
                   <div className="flex items-center gap-3 justify-start sm:justify-end">
-                    <span className="text-sm font-bold text-white">{form[field.name]}/10</span>
+                    <span className="theme-text text-sm font-bold">{form[field.name]}/10</span>
                     <span className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeClass}`}>
                       {label}
                     </span>
@@ -163,7 +163,7 @@ function ActivityFormPanel({ error, form, isSubmitting, message, onChange, onSav
                   className="h-1 w-full cursor-pointer accent-blue-300"
                 />
 
-                <div className="flex justify-between text-[11px] uppercase tracking-widest text-zinc-500">
+                <div className="theme-subtle flex justify-between text-[11px] uppercase tracking-widest">
                   <span>{field.minLabel}</span>
                   <span>{field.maxLabel}</span>
                 </div>
@@ -173,11 +173,11 @@ function ActivityFormPanel({ error, form, isSubmitting, message, onChange, onSav
         </div>
       </div>
 
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5">
+      <div className="theme-card-muted rounded-2xl border p-5">
         <div className="mb-4">
-          <p className="text-lg font-semibold text-white">Catatan Harian</p>
-          <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-            Ceritakan secara singkat bagaimana hari Anda kemarin.
+          <p className="theme-text text-lg font-semibold">{t.ActivityDailyNoteTitle}</p>
+          <p className="theme-muted mt-2 text-sm leading-relaxed">
+            {t.ActivityDailyNoteDescription}
           </p>
         </div>
 
@@ -185,12 +185,12 @@ function ActivityFormPanel({ error, form, isSubmitting, message, onChange, onSav
           name="dailyNote"
           value={form.dailyNote}
           onChange={onChange}
-          placeholder="Contoh: Hari ini saya merasa cukup lelah karena banyak tugas menumpuk, tidur kurang, dan sulit fokus saat belajar."
-          className="min-h-45 w-full resize-none rounded-2xl border border-zinc-800 bg-[#0F1117] p-4 text-sm text-white outline-none placeholder:text-zinc-500 focus:border-blue-300"
+          placeholder={t.ActivityDailyNotePlaceholder}
+          className="theme-input min-h-45 w-full resize-none rounded-2xl border p-4 text-sm outline-none focus:border-blue-300"
           maxLength={1000}
         />
 
-        <div className="mt-3 text-right text-xs text-zinc-500">
+        <div className="theme-subtle mt-3 text-right text-xs">
           {form.dailyNote.length}/1000
         </div>
       </div>
@@ -205,7 +205,7 @@ function ActivityFormPanel({ error, form, isSubmitting, message, onChange, onSav
           <button
             type="button"
             onClick={onSaveDraft}
-            className="h-14 flex-1 rounded-2xl border border-zinc-700 bg-zinc-900 px-5 text-sm font-semibold text-white transition hover:border-zinc-600 hover:bg-zinc-800 sm:flex-none"
+            className="theme-card-muted h-14 flex-1 rounded-2xl border px-5 text-sm font-semibold transition theme-hover sm:flex-none"
           >
             {t.ActivitySaveDraftButton}
           </button>

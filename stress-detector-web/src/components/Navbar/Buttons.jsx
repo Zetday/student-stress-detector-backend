@@ -1,14 +1,12 @@
 import { useLanguage } from "../../contexts/LanguageContext";
 import { useTheme } from "../../contexts/ThemeContext";
-
-// Component
-import IconsNavbar from "./IconsNavbar";
-import IconButton from "./IconButton";
+import { Moon, Sun } from "lucide-react";
 
 function Buttons() {
   const { language, toggleLanguage } = useLanguage();
   const { theme, toggleTheme } = useTheme();
-  const nextThemeLabel = theme === "dark" ? "Ganti ke light mode" : "Ganti ke dark mode";
+  const isDark = theme === "dark";
+  const nextThemeLabel = isDark ? "Ganti ke light mode" : "Ganti ke dark mode";
 
   return (
     <div className="flex items-center gap-2">
@@ -19,15 +17,32 @@ function Buttons() {
         className="
           h-9 min-w-11
           rounded-full
-          border border-zinc-700
+          border theme-border
           px-3
           text-xs font-bold uppercase tracking-wider
-          text-zinc-300
+          theme-muted
           transition
-          hover:border-zinc-500 hover:bg-zinc-800 hover:text-white
+          theme-hover
         "
       >
         {language === "id" ? "ID" : "EN"}
+      </button>
+
+      <button
+        type="button"
+        onClick={toggleTheme}
+        aria-label={nextThemeLabel}
+        title={nextThemeLabel}
+        className="
+          grid h-9 w-9 place-items-center
+          rounded-full
+          border theme-border
+          theme-muted
+          transition
+          theme-hover
+        "
+      >
+        {isDark ? <Sun size={17} /> : <Moon size={17} />}
       </button>
     </div>
   );

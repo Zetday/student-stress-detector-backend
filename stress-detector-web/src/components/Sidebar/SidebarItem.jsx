@@ -8,7 +8,7 @@ function SidebarItem({ to, icon, children, end = false }) {
       className={({ isActive }) =>
         `
         flex items-center gap-2 py-3 text-sm font-medium transition-colors
-        ${isActive ? "text-blue-500" : "text-zinc-500 hover:text-zinc-200"}
+        ${isActive ? "theme-accent" : "theme-muted hover:text-[var(--text)]"}
         `
       }
     >
