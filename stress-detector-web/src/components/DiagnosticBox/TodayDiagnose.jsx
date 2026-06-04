@@ -116,16 +116,16 @@ function TodayDiagnose({studyTime, taskLoad, deadlinePressure, physicalActivity,
         return (
           <div key={index}>
             <div className="flex items-center mb-2">
-              <span className="flex-1 text-zinc-300 text-sm uppercase tracking-wider">
+              <span className="theme-muted flex-1 text-sm uppercase tracking-wider">
                 {item.label}
               </span>
 
-              <span className="ml-auto text-zinc-200 text-sm font-medium">
+              <span className="theme-text ml-auto text-sm font-medium">
                 {metric.display}
               </span>
             </div>
 
-            <div className="w-full h-1 bg-zinc-700 rounded-full overflow-hidden">
+            <div className="theme-card-muted w-full h-1 rounded-full overflow-hidden">
               <div
                 className={`h-full ${metric.color}`}
                 style={{ width: `${metric.width}%` }}

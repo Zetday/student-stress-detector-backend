@@ -1,10 +1,4 @@
-import getRangeStatus from "./getRangeStatus";
-
-function getRangeFields(t, form) {
-  const assignmentStatus = getRangeStatus(form.assignmentLoad, t);
-  const deadlineStatus = getRangeStatus(form.deadlinePressure, t);
-  const fatigueStatus = getRangeStatus(form.fatigueLevel, t);
-
+function getRangeFields(t) {
   return [
     {
       name: "assignmentLoad",
@@ -13,10 +7,9 @@ function getRangeFields(t, form) {
       max: "10",
       step: "1",
       label: t.ActivityAssignmentLoadTitle,
+      description: "Seberapa berat beban tugas Anda?",
       minLabel: t.ActivityLowLabel,
       maxLabel: t.ActivityExtremeLabel,
-      status: assignmentStatus.label,
-      statusColor: assignmentStatus.color,
     },
     {
       name: "deadlinePressure",
@@ -25,10 +18,9 @@ function getRangeFields(t, form) {
       max: "10",
       step: "1",
       label: t.DeadlinePressureTitle,
+      description: "Seberapa mendesak deadline yang Anda hadapi?",
       minLabel: t.ActivityRelaxedLabel,
       maxLabel: t.ActivityUrgentLabel,
-      status: deadlineStatus.label,
-      statusColor: deadlineStatus.color,
     },
     {
       name: "fatigueLevel",
@@ -37,10 +29,9 @@ function getRangeFields(t, form) {
       max: "10",
       step: "1",
       label: t.FatigueLevelTitle,
+      description: "Seberapa lelah fisik dan mental yang Anda rasakan?",
       minLabel: t.ActivityFreshLabel,
       maxLabel: t.ActivityExhaustedLabel,
-      status: fatigueStatus.label,
-      statusColor: fatigueStatus.color,
     },
     {
       name: "moodScore",
@@ -49,10 +40,9 @@ function getRangeFields(t, form) {
       max: "10",
       step: "1",
       label: t.MoodScoreTitle,
+      description: "Bagaimana suasana hati Anda secara keseluruhan?",
       minLabel: t.ActivityBadLabel,
       maxLabel: t.ActivityVeryGoodLabel,
-      status: `${form.moodScore}/10`,
-      statusColor: "text-emerald-400",
     },
   ];
 }

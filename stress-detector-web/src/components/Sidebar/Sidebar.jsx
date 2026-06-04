@@ -1,13 +1,35 @@
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 import SidebarItem from "./SidebarItem";
 import logo from "../../assets/img/logo.png";
 import IconsSidebar from "./IconsSidebar";
 
 // Contexts
 import { useLanguage } from "../../contexts/LanguageContext";
+import { useUser } from "../../contexts/UserContext";
+import { logout as logoutApi } from "../../services/authService";
 
 function Sidebar({ isOpen, setIsOpen }) {
   const { t } = useLanguage();
+  const { setUser } = useUser();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    try {
+      if (refreshToken) {
+        await logoutApi(refreshToken);
+      }
+    } catch (err) {
+      console.error("Logout API failed:", err);
+    }
+
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    setUser({ fullname: "", email: "", role: "", profileImage: null });
+    navigate("/login", { replace: true });
+  };
 
   return (
     <>
@@ -24,9 +46,8 @@ function Sidebar({ isOpen, setIsOpen }) {
         className={`
           fixed left-0 top-0 z-40
           flex h-screen w-52 flex-col
-          bg-[#0B0B0C]
-          px-6 py-8 text-white
-          shadow-[18px_0_40px_rgba(0,0,0,0.35)]
+          theme-sidebar
+          px-6 py-8
           transition-transform duration-300
 
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
@@ -48,12 +69,11 @@ function Sidebar({ isOpen, setIsOpen }) {
           className="
             flex h-10 w-10 items-center justify-center
             rounded-xl  
-            border border-white/5
-            bg-white/(0.03)
-            text-white/80
+            border theme-border-soft
+            theme-card-muted
+            theme-muted
             transition-all duration-200
-            hover:bg-white/(0.06)
-            hover:text-white
+            theme-hover
             md:hidden
           "
         >
@@ -82,7 +102,7 @@ function Sidebar({ isOpen, setIsOpen }) {
             </SidebarItem>
 
             <SidebarItem
-              to="/activities"
+              to="/activity-history"
               icon={
                 <IconsSidebar
                   paths={
@@ -109,7 +129,7 @@ function Sidebar({ isOpen, setIsOpen }) {
             </SidebarItem>
 
             <SidebarItem
-              to="/prediction"
+              to="/Insight"
               icon={
                 <IconsSidebar
                   paths={
@@ -135,53 +155,6 @@ function Sidebar({ isOpen, setIsOpen }) {
             </SidebarItem>
 
             <SidebarItem
-              to="/recommendations"
-              icon={
-                <IconsSidebar
-                  paths={
-                    <>
-                      <path
-                        d="M12 3v3M12 18v3M3 12h3M18 12h3M6.8 6.8l2.1 2.1M15.1 15.1l2.1 2.1M17.2 6.8l-2.1 2.1M8.9 15.1l-2.1 2.1"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                      />
-                    </>
-                  }
-                />
-              }
-            >
-              {t.ReqomendationSdbr}
-            </SidebarItem>
-
-            <SidebarItem
-              to="/insights"
-              icon={
-                <IconsSidebar
-                  paths={
-                    <>
-                      <path
-                        d="m4 16 4-4 3 3 6-7 3 3"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M4 20h16"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                      />
-                    </>
-                  }
-                />
-              }
-            >
-              Insights
-            </SidebarItem>
-
-            <SidebarItem
               to="/profile"
               icon={
                 <IconsSidebar
@@ -203,9 +176,21 @@ function Sidebar({ isOpen, setIsOpen }) {
           </div>
 
           <div className="mt-auto">
-            <SidebarItem
-              to="/login"
-              icon={
+            <SidebarItem to="/LogActivity">
+              <div className="bg-[#ADC7FF] text-[#002E68] text-center w-38 h-10 rounded justify-center">
+                <span className="text-2xl ">+ </span> {t.StressCheck}
+                </div>
+            </SidebarItem>
+
+             <button
+              type="button"
+              onClick={handleLogout}
+              className="
+                flex w-full items-center gap-2 py-3 text-sm font-medium transition-colors
+                theme-muted hover:text-(--text)
+              "
+            >
+              <span>
                 <IconsSidebar
                   paths={
                     <>
@@ -219,10 +204,11 @@ function Sidebar({ isOpen, setIsOpen }) {
                     </>
                   }
                 />
-              }
-            >
-              {t.LogoutSdbr}
-            </SidebarItem>
+              </span>
+              <span className="truncate text-[15px] leading-normal">
+                {t.LogoutSdbr}
+              </span>
+            </button>
           </div>
 
         </nav>

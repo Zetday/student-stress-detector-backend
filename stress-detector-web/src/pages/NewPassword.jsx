@@ -1,8 +1,9 @@
 // Sistem
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import useInput from "../../hooks/useInput";
 import { useLanguage } from "../contexts/LanguageContext";
+import { resetPassword } from "../services/authService";
 
 // Asset
 import logo from "../assets/img/logo.png";
@@ -19,10 +20,14 @@ function NewPassword() {
   const [confirmPassword, onConfirmPasswordChange] = useInput("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [apiError, setApiError] = useState("");
+  const [apiMessage, setApiMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const targetEmail = "user@example.com";
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token") || "";
 
   function validatePassword(value) {
     if (value.length < 8) {
@@ -44,15 +49,28 @@ function NewPassword() {
     onPasswordChange(e);
     setPasswordError("");
     setConfirmPasswordError("");
+    setApiError("");
+    setApiMessage("");
   }
 
   function handleConfirmPasswordChange(e) {
     onConfirmPasswordChange(e);
     setConfirmPasswordError("");
+    setApiError("");
+    setApiMessage("");
   }
 
-  function onSubmitHandler(e) {
+  async function onSubmitHandler(e) {
     e.preventDefault();
+    setApiError("");
+    setApiMessage("");
+    setPasswordError("");
+    setConfirmPasswordError("");
+
+    if (!token) {
+      setApiError("Tautan pemulihan tidak valid. Silakan minta tautan baru.");
+      return;
+    }
 
     const validationMessage = validatePassword(password);
 
@@ -66,14 +84,24 @@ function NewPassword() {
       return;
     }
 
-    navigate("/login");
+    setIsSubmitting(true);
+    const { error, message } = await resetPassword({ token, password });
+    setIsSubmitting(false);
+
+    if (error) {
+      setApiError(message || "Gagal memperbarui kata sandi.");
+      return;
+    }
+
+    setApiMessage(message || "Kata sandi berhasil diubah.");
+    setTimeout(() => navigate("/login"), 1200);
   }
 
   return (
     <section
       className="
         min-h-screen
-        bg-[#0B0B0B]
+        theme-auth-shell
         flex justify-center
         px-4 py-10
       "
@@ -84,8 +112,8 @@ function NewPassword() {
           min-h-[720px]
           rounded-3xl
           overflow-hidden
-          bg-[#111111]
-          border border-white/5
+          theme-card
+          border
           shadow-2xl
           grid grid-cols-1 lg:grid-cols-2
         "
@@ -98,31 +126,33 @@ function NewPassword() {
           className="
             flex items-center justify-center
             px-8 md:px-16 py-12
-            bg-[#171717]
+            theme-card-muted
           "
         >
           <div className="w-full max-w-md">
             <img src={logo} alt="logo cek tenang" className="w-36 mb-10" />
 
-            <h2 className="text-4xl font-bold text-white mb-4">
+            <h2 className="theme-text text-4xl font-bold mb-4">
               {t.HeadingNewPassword}
             </h2>
 
-            <p className="text-lg text-gray-300 mb-14">
+            <p className="theme-muted text-lg mb-14">
               {t.DeskripsiNewPassword}
             </p>
 
-            <div className="flex items-center gap-4 mb-14">
-              <span className="text-2xl font-semibold text-blue-500">@</span>
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-500">
-                  Target Email
+            {!token && (
+              <div className="mb-10 rounded-xl border border-red-500/40 bg-red-500/10 p-4">
+                <p className="text-sm text-red-500">
+                  Tautan pemulihan tidak valid atau token tidak ditemukan.
                 </p>
-                <p className="mt-1 text-lg text-white">
-                  {targetEmail}
-                </p>
+                <Link
+                  to="/resetpassword"
+                  className="mt-2 inline-block text-sm font-medium text-[#9BB3FF] hover:text-[var(--text)]"
+                >
+                  Minta tautan pemulihan baru
+                </Link>
               </div>
-            </div>
+            )}
 
             <form onSubmit={onSubmitHandler} className="space-y-8">
                 <InputPassword
@@ -143,8 +173,20 @@ function NewPassword() {
                   {t.LabelConfirmNewPassword}
                 </InputPassword>
 
-              <ButtonSubmit type="submit">
-                {t.ButtonNewPassword}
+              {apiError && (
+                <p className="text-sm text-red-500">
+                  {apiError}
+                </p>
+              )}
+
+              {apiMessage && (
+                <p className="text-sm text-green-500">
+                  {apiMessage}
+                </p>
+              )}
+
+              <ButtonSubmit type="submit" disabled={isSubmitting || !token}>
+                {isSubmitting ? "Memperbarui..." : t.ButtonNewPassword}
               </ButtonSubmit>
 
             </form>

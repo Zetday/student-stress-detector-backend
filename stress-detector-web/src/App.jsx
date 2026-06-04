@@ -8,7 +8,12 @@ import LoginPage from "./pages/LoginPages"
 import ResetPassword from "./pages/ResetPassword"
 import NewPassword from "./pages/NewPassword"
 import DashboardPage from "./pages/DashboardPages"
-import ActivitiesPage from "./pages/ActivitiesPages"
+import LogActivitiesPage from "./pages/LogActivitiesPages"
+import ActivityHistoryPage from "./pages/ActivityHistoryPage"
+import InsightPage from "./pages/InsightsPage"
+import ProfilePage from "./pages/ProfilePage"
+import ProtectedRoute from "../src/contexts/ProtectedRoute"
+
 
 export default function App() {
   return (
@@ -16,13 +21,20 @@ export default function App() {
       <LanguageProvider>
         <Routes>
           <Route path="/" element={<LoginPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/activities" element={<ActivitiesPage />} />
-
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/resetpassword" element={<ResetPassword />} />
           <Route path="/newpassword" element={<NewPassword />} />
+          <Route path="/reset-password" element={<NewPassword />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/LogActivity" element={<LogActivitiesPage />} />
+            <Route path="/LogActivity/:id" element={<LogActivitiesPage />} />
+            <Route path="/activity-history" element={<ActivityHistoryPage />} />
+            <Route path="/Insight" element={<InsightPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+          </Route>
         </Routes>
       </LanguageProvider>
     </ThemeProvider>

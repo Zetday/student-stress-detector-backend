@@ -1,6 +1,4 @@
 import PropTypes from "prop-types";
-import ContributorBar from "./ContributorBar";
-import getNumericValue from "./getNumericValue";
 import getStressIndex from "./getStressIndex";
 
 function getStressCategory(score, t) {
@@ -34,107 +32,74 @@ function getStressCategory(score, t) {
   };
 }
 
-function ActivityAnalysisPanel({ form, t }) {
+function ActivityAnalysisPanel({ form, t, visible = true, onClose }) {
+  if (!visible) {
+    return null;
+  }
+
   const stressIndex = getStressIndex(form);
   const stressCategory = getStressCategory(stressIndex, t);
 
   return (
-    <aside className="space-y-6">
-      <section className={`rounded-2xl bg-gradient-to-br from-zinc-800 via-zinc-800 ${stressCategory.bgcolor} p-6 md:p-7`}>
-        <div className="mb-8 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-400">
-              {t.ActivityReviewLabel}
-            </p>
-            <h2 className="mt-2 text-2xl font-bold text-white">
-              {t.ActivityTodayStatusTitle}
-            </h2>
-          </div>
-          <span className={`rounded-full ${stressCategory.bgcolorTag} px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${stressCategory.tag}`}>
-            Live Sync
-          </span>
-        </div>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-lg rounded-[28px] border border-white/10 bg-theme-card p-6 shadow-2xl transition duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+          aria-label={t.CloseButton || "Tutup"}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
 
-        <div className="text-center">
-          <div className="flex items-start justify-center gap-2">
-            <span className={`text-7xl font-extrabold ${stressCategory.color}`}>
-              {stressIndex}
-            </span>
-            <span className="mt-4 text-xl font-bold text-zinc-300">%</span>
-          </div>
-          <p className={`mt-2 text-xl font-bold ${stressCategory.color}`}>
-            {stressCategory.label}
-          </p>
-          <p className="mx-auto mt-4 max-w-xs text-sm leading-relaxed text-zinc-400">
-            {t.ActivityStressSummary}
-          </p>
-
-          <div className="mt-10">
-            <h3 className="mb-5 text-[11px] font-bold uppercase tracking-widest text-zinc-400">
-              {t.ActivityMainContributorTitle}
-            </h3>
-            <div className="space-y-4">
-              <ContributorBar
-                label={t.DeadlinePressureTitle}
-                value={32}
-                width={`${Math.max(24, getNumericValue(form.deadlinePressure) * 10)}%`}
-              />
-              <ContributorBar
-                label={t.ActivitySleepQualityContributor}
-                value={15}
-                width={`${Math.max(24, Math.max(0, 10 - getNumericValue(form.sleepHours)) * 10)}%`}
-              />
+        <section className={`theme-card rounded-3xl border-0 bg-linear-to-br ${stressCategory.bgcolor} p-6 md:p-7`}>
+          <div className="mb-8 flex items-center justify-between gap-4">
+            <div>
+              <p className="theme-muted text-[11px] font-bold uppercase tracking-widest">
+                {t.ActivityReviewLabel}
+              </p>
+              <h2 className="theme-text mt-2 text-2xl font-bold">
+                {t.ActivityTodayStatusTitle}
+              </h2>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="rounded-xl border border-white/10 bg-[#171717] p-5 md:p-6">
-        <div className="mb-5 flex items-center gap-3">
-          <span className="text-sm font-bold text-blue-300">AI</span>
-          <h2 className="text-sm font-bold uppercase tracking-widest text-zinc-200">
-            {t.ActivityAiRecommendationTitle}
-          </h2>
-        </div>
-
-        <div className="space-y-5 text-sm leading-relaxed text-zinc-300">
-          <div className="flex gap-4">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-xs font-bold text-emerald-300">
-              1
+            <span className={`rounded-full ${stressCategory.bgcolorTag} px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${stressCategory.tag}`}>
+              {t.ActivityAnalysisTag}
             </span>
-            <p>{t.ActivityAiRecommendationOne}</p>
           </div>
-          <div className="flex gap-4">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-xs font-bold text-blue-300">
-              2
-            </span>
-            <p>{t.ActivityAiRecommendationTwo}</p>
-          </div>
-        </div>
-      </section>
 
-      <section className="rounded-xl bg-zinc-800 p-5 md:p-6">
-        <div className="flex gap-4">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-xs font-bold text-emerald-300">
-            TIP
-          </span>
-          <div>
-            <h2 className="text-sm font-bold uppercase tracking-widest text-white">
-              {t.ActivityQuickTipsTitle}
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-zinc-300">
-              {t.ActivityQuickTipsDescription}
+          <div className="text-center">
+            <div className="flex items-start justify-center gap-2">
+              <span className={`text-7xl font-extrabold ${stressCategory.color}`}>
+                {stressIndex}
+              </span>
+              <span className="theme-muted mt-4 text-xl font-bold">%</span>
+            </div>
+            <p className={`mt-2 text-xl font-bold ${stressCategory.color}`}>
+              {stressCategory.label}
+            </p>
+            <p className="theme-muted mx-auto mt-4 max-w-xs text-sm leading-relaxed">
+              {t.ActivityStressSummary}
             </p>
           </div>
-        </div>
-      </section>
-    </aside>
+        </section>
+      </div>
+    </div>
   );
 }
 
 ActivityAnalysisPanel.propTypes = {
-  form: PropTypes.objectOf(PropTypes.string).isRequired,
+  form: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])).isRequired,
   t: PropTypes.objectOf(PropTypes.string).isRequired,
+  visible: PropTypes.bool,
+  onClose: PropTypes.func,
 };
 
 export default ActivityAnalysisPanel;

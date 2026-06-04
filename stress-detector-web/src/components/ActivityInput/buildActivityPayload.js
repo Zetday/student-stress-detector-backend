@@ -1,10 +1,15 @@
 import { activityNumberFields } from "./activityFormConstants";
 
-function buildActivityPayload(form) {
+function buildActivityPayload(form, status) {
   return {
-    ...form,
+    activityDate: form.activityDate || new Date().toISOString().slice(0, 10),
+    activityStatus: status,
+    note: form.dailyNote,
     ...Object.fromEntries(
-      activityNumberFields.map((fieldName) => [fieldName, Number(form[fieldName] || 0)]),
+      activityNumberFields.map((fieldName) => [
+        fieldName,
+        Number(form[fieldName] || 0),
+      ]),
     ),
   };
 }

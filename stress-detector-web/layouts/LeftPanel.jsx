@@ -8,8 +8,7 @@ export default function LeftPanel() {
       className="
         relative 
         h-full
-        bg-[#0A0A0A]
-        text-white
+        theme-card
         px-10 py-12
         flex flex-col justify-center
         overflow-hidden
@@ -40,7 +39,7 @@ export default function LeftPanel() {
         {/* Description */}
         <p
           className="
-            text-gray-400
+            theme-muted
             text-[17px]
             leading-8
             max-w-md
@@ -58,8 +57,8 @@ export default function LeftPanel() {
             className="
               flex items-start gap-4
               rounded-2xl
-              border border-white/10
-              bg-white/(0.03)
+              border theme-border
+              theme-card-muted
               px-5 py-5
               backdrop-blur-sm
             "
@@ -69,8 +68,8 @@ export default function LeftPanel() {
               className="
                 w-11 h-11
                 rounded-xl
-                bg-[#111827]
-                border border-white/10
+                theme-accent-bg
+                border theme-border
                 flex items-center justify-center
                 text-blue-400
                 text-lg
@@ -85,7 +84,7 @@ export default function LeftPanel() {
                 {t.Subheading1}
               </h3>
 
-              <p className="text-sm text-gray-400 leading-6">
+              <p className="theme-muted text-sm leading-6">
                 {t.Subdeskripsi1}
               </p>
             </div>
@@ -96,8 +95,8 @@ export default function LeftPanel() {
             className="
               flex items-start gap-4
               rounded-2xl
-              border border-white/10
-              bg-white/(0.03)
+              border theme-border
+              theme-card-muted
               px-5 py-5
               backdrop-blur-sm
             "
@@ -107,8 +106,8 @@ export default function LeftPanel() {
               className="
                 w-11 h-11
                 rounded-xl
-                bg-[#111827]
-                border border-white/10
+                theme-accent-bg
+                border theme-border
                 flex items-center justify-center
                 text-green-400
                 text-lg
@@ -123,7 +122,7 @@ export default function LeftPanel() {
                 {t.Subheading2}
               </h3>
 
-              <p className="text-sm text-gray-400 leading-6">
+              <p className="theme-muted text-sm leading-6">
                 {t.Subdeskripsi2}
               </p>
             </div>
@@ -138,7 +137,7 @@ export default function LeftPanel() {
           relative z-10
           text-[11px]
           tracking-[0.25em]
-          text-gray-600
+          theme-subtle
           mt-16
         "
       >

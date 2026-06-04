@@ -1,8 +1,21 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, } from "recharts";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { useTheme } from "../../contexts/ThemeContext";
 
 function StressChart() {
   const { t } = useLanguage();
+  const { theme } = useTheme();
+  const rootStyle = typeof window !== "undefined"
+    ? getComputedStyle(document.documentElement)
+    : null;
+  const themeColors = {
+    grid: rootStyle?.getPropertyValue("--chart-grid").trim() || "#27272a",
+    textMuted: rootStyle?.getPropertyValue("--text-muted").trim() || "#a1a1aa",
+    tooltipBg: rootStyle?.getPropertyValue("--chart-tooltip-bg").trim() || "#18181b",
+    tooltipBorder: rootStyle?.getPropertyValue("--chart-tooltip-border").trim() || "#27272a",
+    text: rootStyle?.getPropertyValue("--text").trim() || "#ffffff",
+  };
+  void theme;
   const data = [
   { day: `${t.Senin}`, value: 70 },
   { day: `${t.Selasa}`, value: 1 },
@@ -19,7 +32,7 @@ function StressChart() {
 
 
   return (
-    <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 w-full h-full">
+    <div className="theme-card rounded-2xl p-4 border w-full h-full">
 
       <div className="flex items-center justify-between mb-4">
         <p className="text-xs uppercase tracking-widest text-blue-400 font-semibold">
@@ -44,28 +57,28 @@ function StressChart() {
           >
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="#27272a"
+              stroke={themeColors.grid}
             />
 
             <XAxis
               dataKey="day"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#a1a1aa", fontSize: 12 }}
+              tick={{ fill: themeColors.textMuted, fontSize: 12 }}
             />
 
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#a1a1aa", fontSize: 12 }}
+              tick={{ fill: themeColors.textMuted, fontSize: 12 }}
             />
 
             <Tooltip
               contentStyle={{
-                backgroundColor: "#18181b",
-                border: "1px solid #27272a",
+                backgroundColor: themeColors.tooltipBg,
+                border: `1px solid ${themeColors.tooltipBorder}`,
                 borderRadius: "12px",
-                color: "#fff",
+                color: themeColors.text,
               }}
             />
 

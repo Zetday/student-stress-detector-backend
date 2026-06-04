@@ -5,14 +5,11 @@ const initialActivityForm = {
   screenTimeHours: "",
   socialMediaHours: "",
   physicalActivityMinutes: "",
-  caffeineIntakeMg: "0",
+  dailyNote: "",
   moodScore: "0",
   fatigueLevel: "0",
   assignmentLoad: "0",
   deadlinePressure: "0",
-  socialInteractionScore: "0",
-  financialWorryScore: "0",
-  healthConditionScore: "0",
 };
 
 const activityNumberFields = [
@@ -21,14 +18,10 @@ const activityNumberFields = [
   "screenTimeHours",
   "socialMediaHours",
   "physicalActivityMinutes",
-  "caffeineIntakeMg",
   "moodScore",
   "fatigueLevel",
   "assignmentLoad",
   "deadlinePressure",
-  "socialInteractionScore",
-  "financialWorryScore",
-  "healthConditionScore",
 ];
 
 export { activityNumberFields, initialActivityForm };

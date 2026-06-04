@@ -13,7 +13,7 @@ export default function RightPanel() {
     <div className="
         w-full md:w-1/2 
         min-h-screen 
-      bg-[#1C1B1B] 
+        theme-card-muted
         flex
         items-center 
         justify-center
@@ -35,7 +35,7 @@ export default function RightPanel() {
           Mulai Perjalanan Anda
         </h2>
 
-        <p className="text-sm text-gray-500 mb-6">
+        <p className="theme-muted text-sm mb-6">
           Lengkapi data di bawah untuk akses laboratorium data Anda.
         </p>
 
@@ -56,7 +56,7 @@ export default function RightPanel() {
           <ButtonSubmit>{t.SubmitRegister}</ButtonSubmit>
 
           {/* Login link */}
-          <p className="text-sm text-center text-gray-500">
+          <p className="theme-muted text-sm text-center">
             {t.LabelLogin}{" "}
             <span className="text-blue-600 cursor-pointer">
               {t.LinkLogin}
