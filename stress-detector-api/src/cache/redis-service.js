@@ -2,11 +2,14 @@ import { createClient } from 'redis';
 
 class CacheService {
   constructor() {
-    this._client = createClient({
-      socket: {
-        host: process.env.REDIS_HOST,
-      },
-    });
+    const redisUrl = process.env.REDIS_URL;
+    this._client = redisUrl
+      ? createClient({ url: redisUrl })
+      : createClient({
+        socket: {
+          host: process.env.REDIS_HOST || 'localhost',
+        },
+      });
 
     this._client.on('error', (error) => {
       console.error(error);

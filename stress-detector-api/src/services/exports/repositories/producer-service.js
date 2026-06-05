@@ -2,12 +2,16 @@ import amqp from 'amqplib';
 
 class ProducerService {
   constructor() {
-    const user = process.env.RABBITMQ_USER || 'guest';
-    const pass = process.env.RABBITMQ_PASSWORD || 'guest';
-    const host = process.env.RABBITMQ_HOST || 'localhost';
-    const port = process.env.RABBITMQ_PORT || '5672';
-
-    this.amqpUri = `amqp://${user}:${pass}@${host}:${port}`;
+    const rabbitUrl = process.env.RABBITMQ_URL;
+    if (rabbitUrl) {
+      this.amqpUri = rabbitUrl;
+    } else {
+      const user = process.env.RABBITMQ_USER || 'guest';
+      const pass = process.env.RABBITMQ_PASSWORD || 'guest';
+      const host = process.env.RABBITMQ_HOST || 'localhost';
+      const port = process.env.RABBITMQ_PORT || '5672';
+      this.amqpUri = `amqp://${user}:${pass}@${host}:${port}`;
+    }
   }
 
   async sendMessage(queue, message) {

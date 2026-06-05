@@ -8,12 +8,16 @@ import RecommendationRepositories from '../recommendations/repositories/recommen
 
 class Consumer {
   constructor() {
-    const user = process.env.RABBITMQ_USER;
-    const pass = process.env.RABBITMQ_PASSWORD;
-    const host = process.env.RABBITMQ_HOST;
-    const port = process.env.RABBITMQ_PORT;
-
-    this.amqpUri = `amqp://${user}:${pass}@${host}:${port}`;
+    const rabbitUrl = process.env.RABBITMQ_URL;
+    if (rabbitUrl) {
+      this.amqpUri = rabbitUrl;
+    } else {
+      const user = process.env.RABBITMQ_USER;
+      const pass = process.env.RABBITMQ_PASSWORD;
+      const host = process.env.RABBITMQ_HOST;
+      const port = process.env.RABBITMQ_PORT;
+      this.amqpUri = `amqp://${user}:${pass}@${host}:${port}`;
+    }
 
     this.transporter = nodemailer.createTransport(
       process.env.MOCK_MAIL?.trim() === 'true'
