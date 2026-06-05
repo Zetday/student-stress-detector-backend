@@ -1,7 +1,10 @@
 import nodemailer from 'nodemailer';
 
+const isProduction = process.env.NODE_ENV === 'production' || !!process.env.RAILWAY_ENVIRONMENT;
+const hasMailConfig = process.env.MAIL_HOST && process.env.MAIL_USER && process.env.MAIL_PASSWORD;
+
 const transporter = nodemailer.createTransport(
-  process.env.MOCK_MAIL?.trim() === 'true'
+  (process.env.MOCK_MAIL?.trim() === 'true' || (isProduction && !hasMailConfig))
     ? { jsonTransport: true }
     : {
       host: process.env.MAIL_HOST || 'smtp.mailtrap.io',
@@ -62,4 +65,11 @@ export const sendPasswordResetEmail = async (email, resetUrl) => {
     subject: '[CekTenang] Instruksi Atur Ulang Kata Sandi',
     html: htmlContent,
   });
+
+  if (transporter.options.jsonTransport) {
+    console.info('=============================================');
+    console.info(`[Mock Email] Password reset requested for: ${email}`);
+    console.info(`Reset Link: ${resetUrl}`);
+    console.info('=============================================');
+  }
 };

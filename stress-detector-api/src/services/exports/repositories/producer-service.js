@@ -5,16 +5,30 @@ class ProducerService {
     const rabbitUrl = process.env.RABBITMQ_URL;
     if (rabbitUrl) {
       this.amqpUri = rabbitUrl;
-    } else {
+    } else if (process.env.RABBITMQ_HOST) {
       const user = process.env.RABBITMQ_USER || 'guest';
       const pass = process.env.RABBITMQ_PASSWORD || 'guest';
-      const host = process.env.RABBITMQ_HOST || 'localhost';
+      const host = process.env.RABBITMQ_HOST;
       const port = process.env.RABBITMQ_PORT || '5672';
       this.amqpUri = `amqp://${user}:${pass}@${host}:${port}`;
+    } else {
+      this.amqpUri = null;
     }
   }
 
   async sendMessage(queue, message) {
+    if (!this.amqpUri) {
+      console.log('[Info] RabbitMQ is offline/disabled. Processing task directly in-process:', message);
+      (async () => {
+        try {
+          const { default: consumer } = await import('../consumer.js');
+          await consumer.processExportTask(message);
+        } catch (err) {
+          console.error('[Error] Failed to process task in-process:', err.message);
+        }
+      })();
+      return;
+    }
     let connection;
     let channel;
     try {

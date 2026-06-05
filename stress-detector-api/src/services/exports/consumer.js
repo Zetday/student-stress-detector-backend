@@ -11,29 +11,38 @@ class Consumer {
     const rabbitUrl = process.env.RABBITMQ_URL;
     if (rabbitUrl) {
       this.amqpUri = rabbitUrl;
-    } else {
-      const user = process.env.RABBITMQ_USER;
-      const pass = process.env.RABBITMQ_PASSWORD;
+    } else if (process.env.RABBITMQ_HOST) {
+      const user = process.env.RABBITMQ_USER || 'guest';
+      const pass = process.env.RABBITMQ_PASSWORD || 'guest';
       const host = process.env.RABBITMQ_HOST;
-      const port = process.env.RABBITMQ_PORT;
+      const port = process.env.RABBITMQ_PORT || 5672;
       this.amqpUri = `amqp://${user}:${pass}@${host}:${port}`;
+    } else {
+      this.amqpUri = null;
     }
 
+    const isProduction = process.env.NODE_ENV === 'production' || !!process.env.RAILWAY_ENVIRONMENT;
+    const hasMailConfig = process.env.MAIL_HOST && process.env.MAIL_USER && process.env.MAIL_PASSWORD;
+
     this.transporter = nodemailer.createTransport(
-      process.env.MOCK_MAIL?.trim() === 'true'
+      (process.env.MOCK_MAIL?.trim() === 'true' || (isProduction && !hasMailConfig))
         ? { jsonTransport: true }
         : {
-          host: process.env.MAIL_HOST,
-          port: parseInt(process.env.MAIL_PORT),
+          host: process.env.MAIL_HOST || 'smtp.mailtrap.io',
+          port: parseInt(process.env.MAIL_PORT || '2525'),
           auth: {
-            user: process.env.MAIL_USER,
-            pass: process.env.MAIL_PASSWORD,
+            user: process.env.MAIL_USER || 'f56827880f355c',
+            pass: process.env.MAIL_PASSWORD || 'f67f4833aa6429',
           },
         },
     );
   }
 
   async start() {
+    if (!this.amqpUri) {
+      console.log('[Info] RabbitMQ environment variables not set. Export consumer is disabled.');
+      return;
+    }
     try {
       const connection = await amqp.connect(this.amqpUri);
       const channel = await connection.createChannel();
