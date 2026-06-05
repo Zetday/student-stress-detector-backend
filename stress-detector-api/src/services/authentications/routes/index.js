@@ -6,12 +6,10 @@ import {
   logout,
   forgotPassword,
   resetPassword,
-  loginWithGoogle,
 } from '../controller/authentication-controller.js';
 import { validate } from '../../../middlewares/validate.js';
 import {
   postAuthenticationPayloadSchema,
-  postGoogleAuthenticationPayloadSchema,
   putAuthenticationPayloadSchema,
   deleteAuthenticationPayloadSchema,
   forgotPasswordPayloadSchema,
@@ -25,11 +23,6 @@ router.post(
   '/',
   validate(postAuthenticationPayloadSchema),
   login
-);
-router.post(
-  '/google',
-  validate(postGoogleAuthenticationPayloadSchema),
-  loginWithGoogle
 );
 router.put(
   '/',
