@@ -3,6 +3,7 @@ import Buttons from "./Buttons";
 import FotoProfile from "./FotoProfile";
 import NameDisplay from "./NameDisplay";
 import { useUser } from "../../contexts/UserContext";
+import { getApiUrl } from "../../../api.config";
 
 function Navbar({ title, isOpen, setIsOpen}) {
   const { user } = useUser();
@@ -10,7 +11,7 @@ function Navbar({ title, isOpen, setIsOpen}) {
   const profileSrc = user.profileImage
     ? user.profileImage.startsWith("http")
       ? user.profileImage
-      : `${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"}/uploads/images/${encodeURIComponent(user.profileImage)}`
+      : getApiUrl(`/uploads/images/${encodeURIComponent(user.profileImage)}`)
     : null;
 
   return (

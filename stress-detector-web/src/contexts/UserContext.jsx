@@ -55,8 +55,7 @@ export function UserProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    refreshUser();
-     void Promise.resolve().then(refreshUser);
+    void Promise.resolve().then(refreshUser);
   }, [refreshUser]);
 
   return (
@@ -77,7 +76,7 @@ UserProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-  // eslint-disable-next-line react-refresh/only-export-components
-  export function useUser() {
-    return useContext(UserContext);
+// eslint-disable-next-line react-refresh/only-export-components
+export function useUser() {
+  return useContext(UserContext);
 }

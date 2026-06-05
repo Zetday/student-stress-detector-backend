@@ -12,6 +12,7 @@ import LogActivitiesPage from "./pages/LogActivitiesPages"
 import ActivityHistoryPage from "./pages/ActivityHistoryPage"
 import InsightPage from "./pages/InsightsPage"
 import ProfilePage from "./pages/ProfilePage"
+import LandingPage from "./pages/LandingPage"
 import ProtectedRoute from "../src/contexts/ProtectedRoute"
 
 
@@ -20,7 +21,7 @@ export default function App() {
     <ThemeProvider>
       <LanguageProvider>
         <Routes>
-          <Route path="/" element={<LoginPage />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/resetpassword" element={<ResetPassword />} />
