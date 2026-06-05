@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 .env
 *.log
+knowledge_base/vectorstore/
+docs/

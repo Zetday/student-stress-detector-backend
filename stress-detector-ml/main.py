@@ -15,6 +15,7 @@ from tensorflow.keras import layers
 import joblib
 from dotenv import load_dotenv
 from groq import Groq
+from rag_engine import RAGEngine
 
 # Load environment variables from the script's directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -31,6 +32,9 @@ if GROQ_API_KEY:
         print(f"[Groq] Error initializing client: {e}")
 else:
     print("[Groq] WARNING: GROQ_API_KEY not found in environment variables. RAG endpoint will be disabled.")
+
+# Initialize RAG engine (set to None; loaded at startup)
+rag_engine = None
 
 # ============================================================
 # Custom TensorFlow Model Layers & Loss Classes
@@ -455,6 +459,16 @@ def weekly_trend(levels: List[str]) -> str:
 # ============================================================
 # Endpoints
 # ============================================================
+@app.on_event("startup")
+def startup_rag():
+    """Lazy-load RAG engine at startup. If it fails, other endpoints keep working."""
+    global rag_engine
+    try:
+        rag_engine = RAGEngine()
+        print("[RAG] Engine initialized successfully!")
+    except Exception as e:
+        print(f"[RAG] WARNING: RAG disabled — {e}")
+
 @app.get("/")
 def root():
     return {
@@ -630,7 +644,26 @@ def generate_weekly_rag(req: WeeklyRAGRequest):
         
     history_context = "\n".join(history_summary)
 
-    # 2. System instruction and prompt
+# 2. RAG: Retrieve scientific evidence from journal papers
+    rag_context = ""
+    if rag_engine is not None:
+        try:
+            history_dicts = [
+                day.model_dump() if hasattr(day, 'model_dump') else day.dict()
+                for day in req.history
+            ]
+            query = rag_engine.build_rag_query(history_dicts, req.weekly_stress_prediction)
+            rag_context = rag_engine.retrieve_context(query, top_k=3)
+            print(f"[RAG] Retrieved context for user {req.user_id} ({len(rag_context)} chars)")
+            print(f"[RAG] Query: {query[:200]}...")
+        except Exception as e:
+            print(f"[RAG] Retrieval failed, proceeding without evidence: {e}")
+            rag_context = ""
+    else:
+        print("[RAG] Engine not available, proceeding without scientific evidence.")
+
+
+   # 3. System instruction (rules only)
     system_instruction = (
         "Anda adalah asisten AI psikolog dan coach gaya hidup mahasiswa yang empati, profesional, dan solutif.\n"
         "Tugas Anda adalah menganalisis data aktivitas mingguan mahasiswa untuk mendeteksi tren stres, kesehatan, dan produktivitas mereka.\n\n"
@@ -666,6 +699,19 @@ def generate_weekly_rag(req: WeeklyRAGRequest):
         "6. JANGAN berikan penjelasan teks tambahan di luar JSON tersebut."
     )
 
+    # 4. User prompt (student data + scientific evidence + instructions)
+    evidence_section = ""
+    if rag_context:
+        evidence_section = (
+            f"\n\nSCIENTIFIC EVIDENCE:\n"
+            f"{rag_context}\n\n"
+            "INSTRUKSI PENGGUNAAN EVIDENCE:\n"
+            "- Gunakan evidence ilmiah yang diberikan sebagai dasar utama insight dan rekomendasi.\n"
+            "- Jika evidence kurang lengkap, berikan rekomendasi konservatif yang tidak bertentangan dengan evidence tersebut.\n"
+            "- Jangan membuat klaim ilmiah baru yang tidak didukung konteks.\n"
+            "- Sebutkan temuan ilmiah secara natural dalam teks (tanpa format sitasi formal)."
+        )
+        
     user_prompt = (
         f"Analisis data historis seminggu berikut untuk User ID: {req.user_id}.\n\n"
         f"Prediksi Tingkat Stres Mingguan: {req.weekly_stress_prediction}\n\n"
