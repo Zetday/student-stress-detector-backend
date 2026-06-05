@@ -25,6 +25,7 @@ export const resetPasswordPayloadSchema = Joi.object({
   password: Joi.string().min(6).required(),
 });
 
-export const postGoogleAuthenticationPayloadSchema = Joi.object({
+export const googleLoginPayloadSchema = Joi.object({
   credential: Joi.string().required(),
 });
+

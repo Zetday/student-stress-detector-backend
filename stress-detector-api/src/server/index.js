@@ -5,20 +5,20 @@ import routes from '../routes/index.js';
 import ErrorHandler from '../middlewares/error.js';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
-import path from "path"
 
 const swaggerDocument = YAML.load('./swagger.yaml');
 
 const app = express();
+
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: '*',
     credentials: true,
   }),
 );
 app.use(express.json());
 
-app.use('/uploads/images', express.static(path.resolve(process.cwd(), "uploads/profiles")));
+app.use('/uploads/images', express.static('src/services/uploads/files/profiles'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

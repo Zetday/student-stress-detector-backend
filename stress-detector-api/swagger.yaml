@@ -351,6 +351,58 @@ paths:
         '400':
           description: Invalid token or expired, or validation error
 
+  /authentications/google:
+    post:
+      summary: Login with Google (OAuth 2.0)
+      description: |
+        Authenticates a user using a Google ID Token obtained from Google Sign-In (GSI).
+        - If the Google account is already linked, the user is logged in.
+        - If the email matches an existing account, the Google ID is linked to it.
+        - Otherwise, a new user account is created automatically.
+      tags: [Authentications]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [credential]
+              properties:
+                credential:
+                  type: string
+                  description: Google ID Token (JWT) from Google Sign-In callback
+                  example: eyJhbGciOiJSUzI1NiIsImtpZCI6IjEifQ...
+      responses:
+        '200':
+          description: Login with Google successful — returns access and refresh tokens
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          accessToken: { type: string }
+                          refreshToken: { type: string }
+        '400':
+          description: Validation error — credential field missing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Invalid or expired Google token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+
   # ─── PROFILES ─────────────────────────────────────────────────────────────
   /profiles/me:
     get:

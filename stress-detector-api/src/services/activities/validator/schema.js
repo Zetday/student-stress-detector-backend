@@ -1,24 +1,17 @@
 import Joi from 'joi';
 
-const activityStatusSchema = Joi.string().valid('draft', 'submitted').default('submitted');
-
-const requiredWhenSubmitted = (schema) => schema.when('activityStatus', {
-  is: 'submitted',
-  then: schema.required(),
-  otherwise: schema.optional().allow(null),
-});
-
 export const createActivitySchema = Joi.object({
   activityDate: Joi.date().required(),
-  activityStatus: activityStatusSchema,
-  sleepHours: requiredWhenSubmitted(Joi.number().min(0).max(24)),
-  studyHours: requiredWhenSubmitted(Joi.number().min(0).max(24)),
-  screenTimeHours: requiredWhenSubmitted(Joi.number().min(0).max(24)),
-  socialMediaHours: requiredWhenSubmitted(Joi.number().min(0).max(24)),
-  physicalActivityMinutes: requiredWhenSubmitted(Joi.number().integer().min(0)),
-  moodScore: requiredWhenSubmitted(Joi.number().integer().min(0).max(10)),
-  fatigueLevel: requiredWhenSubmitted(Joi.number().integer().min(0).max(10)),
-  assignmentLoad: requiredWhenSubmitted(Joi.number().integer().min(0)),
-  deadlinePressure: requiredWhenSubmitted(Joi.number().integer().min(0).max(10)),
+  sleepHours: Joi.number().min(0).max(24).required(),
+  studyHours: Joi.number().min(0).max(24).required(),
+  screenTimeHours: Joi.number().min(0).max(24).required(),
+  socialMediaHours: Joi.number().min(0).max(24).required(),
+  physicalActivityMinutes: Joi.number().integer().min(0).required(),
+  moodScore: Joi.number().integer().min(1).max(10).required(),
+  fatigueLevel: Joi.number().integer().min(1).max(10).required(),
+  assignmentLoad: Joi.number().integer().min(0).required(),
+  deadlinePressure: Joi.number().integer().min(1).max(10).required(),
   note: Joi.string().max(500).allow('', null).optional(),
+  activityStatus: Joi.string().valid('draft', 'submitted').default('submitted').optional(),
 });
+

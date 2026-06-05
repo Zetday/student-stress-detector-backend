@@ -5,13 +5,6 @@ import CacheService from '../../../cache/redis-service.js';
 
 class UserRepositories {
   constructor() {
-    console.log({
-      PGHOST: process.env.PGHOST,
-      PGPORT: process.env.PGPORT,
-      PGDATABASE: process.env.PGDATABASE,
-      PGUSER: process.env.PGUSER,
-    });
-
     this.pool = new Pool();
     this.cacheService = new CacheService();
   }
@@ -42,16 +35,6 @@ class UserRepositories {
     const result = await this.pool.query(query);
 
     return result.rows.length > 0;
-  }
-
-  async getUserIdByEmail(email) {
-    const query = {
-      text: 'SELECT id FROM users WHERE email = $1',
-      values: [email],
-    };
-
-    const result = await this.pool.query(query);
-    return result.rows[0]?.id || null;
   }
 
   async getUserById(id) {
@@ -151,6 +134,58 @@ class UserRepositories {
     };
     await this.pool.query(query);
     await this.deleteUserCache(id);
+  }
+
+  async getUserByGoogleId(googleId) {
+    const query = {
+      text: 'SELECT id FROM users WHERE google_id = $1',
+      values: [googleId],
+    };
+    const result = await this.pool.query(query);
+    return result.rows[0] || null;
+  }
+
+  /**
+   * Find or create a user for Google OAuth.
+   * Priority: google_id match → email match (link account) → create new user
+   * @param {{ googleId: string, email: string, fullname: string, picture?: string }} param
+   * @returns {string} userId
+   */
+  async findOrCreateGoogleUser({ googleId, email, fullname, picture }) {
+    // 1. Try to find by google_id
+    const byGoogleId = await this.getUserByGoogleId(googleId);
+    if (byGoogleId) {
+      return byGoogleId.id;
+    }
+
+    // 2. Try to find by email (link existing account)
+    const byEmail = await this.pool.query({
+      text: 'SELECT id FROM users WHERE email = $1',
+      values: [email],
+    });
+
+    if (byEmail.rows.length > 0) {
+      const existingId = byEmail.rows[0].id;
+      const updatedAt = new Date().toISOString();
+      // Link google_id to existing account
+      await this.pool.query({
+        text: 'UPDATE users SET google_id = $1, updated_at = $2 WHERE id = $3',
+        values: [googleId, updatedAt, existingId],
+      });
+      await this.deleteUserCache(existingId);
+      return existingId;
+    }
+
+    // 3. Create new user (no password)
+    const id = nanoid(16);
+    const createdAt = new Date().toISOString();
+    await this.pool.query({
+      text: `INSERT INTO users
+               (id, fullname, email, password, role, profile_image, google_id, created_at, updated_at)
+             VALUES ($1, $2, $3, NULL, 'student', $4, $5, $6, $6)`,
+      values: [id, fullname, email, picture || null, googleId, createdAt],
+    });
+    return id;
   }
 }
 

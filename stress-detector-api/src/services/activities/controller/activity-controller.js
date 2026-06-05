@@ -21,7 +21,7 @@ export const createActivity = async (req, res, next) => {
     fatigueLevel,
     assignmentLoad,
     deadlinePressure,
-    activityStatus = 'submitted',
+    activityStatus,
     note,
   } = req.validated;
 
@@ -47,14 +47,6 @@ export const createActivity = async (req, res, next) => {
 
   if (!activity) {
     return next(new InvariantError('Gagal menambahkan aktivitas'));
-  }
-
-  if (activityStatus === 'draft') {
-    return response(res, 201, 'Draft aktivitas berhasil disimpan', {
-      activity,
-      prediction: null,
-      mlAvailable: null,
-    });
   }
 
   // 2. Call ML service for stress prediction (non-blocking — failure is tolerated)
@@ -166,7 +158,7 @@ export const updateActivity = async (req, res, next) => {
     fatigueLevel,
     assignmentLoad,
     deadlinePressure,
-    activityStatus = 'submitted',
+    activityStatus,
     note,
   } = req.validated;
 
@@ -197,14 +189,6 @@ export const updateActivity = async (req, res, next) => {
 
   if (!activity) {
     return next(new NotFoundError('Aktivitas tidak ditemukan'));
-  }
-
-  if (activityStatus === 'draft') {
-    return response(res, 200, 'Draft aktivitas berhasil diperbarui', {
-      activity,
-      prediction: null,
-      mlAvailable: null,
-    });
   }
 
   // 3. Call ML service for stress prediction (non-blocking)

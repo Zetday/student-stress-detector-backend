@@ -11,9 +11,7 @@ export const login = async (req, res, next) => {
   const userId = await UserRepositories.verifyUserCredential(email, password);
 
   if (!userId) {
-    const emailExists = await UserRepositories.verifyNewEmail(email);
-    const errorMessage = emailExists ? 'Password salah' : 'Email tidak ada';
-    return next(new AuthenticationError(errorMessage));
+    return next(new AuthenticationError('Kredensial yang Anda berikan salah'));
   }
 
   const accessToken = TokenManager.generateAccessToken({ id: userId });
@@ -40,75 +38,6 @@ export const login = async (req, res, next) => {
     accessToken,
     refreshToken,
   });
-};
-
-export const loginWithGoogle = async (req, res, next) => {
-  const payload = req.validated || req.body || {};
-  const { credential } = payload;
-
-  if (!credential) {
-    return next(new AuthenticationError('Google credential tidak ditemukan'));
-  }
-
-  try {
-    const googleResponse = await fetch(
-      `https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`,
-    );
-
-    if (!googleResponse.ok) {
-      return next(new AuthenticationError('Google credential tidak valid'));
-    }
-
-    const tokenInfo = await googleResponse.json();
-    const expectedClientId = process.env.GOOGLE_CLIENT_ID;
-
-    if (!expectedClientId || tokenInfo.aud !== expectedClientId) {
-      return next(new AuthenticationError('Google credential tidak cocok'));
-    }
-
-    if (tokenInfo.email_verified !== 'true' && tokenInfo.email_verified !== true) {
-      return next(new AuthenticationError('Email Google belum terverifikasi'));
-    }
-
-    const email = tokenInfo.email;
-    const fullname = tokenInfo.name || email.split('@')[0];
-    let userId = await UserRepositories.getUserIdByEmail(email);
-
-    if (!userId) {
-      const randomPassword = nanoid(16);
-      const user = await UserRepositories.createUser({
-        fullname,
-        email,
-        password: randomPassword,
-      });
-      userId = user.id;
-    }
-
-    const accessToken = TokenManager.generateAccessToken({ id: userId });
-    const refreshToken = TokenManager.generateRefreshToken({ id: userId });
-    const id = `auth-${nanoid(16)}`;
-    const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
-    const createdAt = new Date().toISOString();
-    const expiresAtDate = new Date();
-    expiresAtDate.setDate(expiresAtDate.getDate() + 7);
-    const expiresAt = expiresAtDate.toISOString();
-
-    await AuthenticationRepositories.addRefreshToken(
-      id,
-      userId,
-      refreshToken,
-      deviceInfo,
-      expiresAt,
-      createdAt,
-    );
-
-    return response(res, 200, 'Login Berhasil', {
-      accessToken,
-      refreshToken,
-    });
-  } catch (error) {
-    return next(new AuthenticationError(error.message || 'Login Google gagal'));
-  }
 };
 
 export const refreshToken = async (req, res, next) => {
@@ -204,3 +133,67 @@ export const resetPassword = async (req, res, next) => {
 
   return response(res, 200, 'Kata sandi berhasil diubah, silakan masuk kembali');
 };
+
+export const loginWithGoogle = async (req, res, next) => {
+  const { credential } = req.validated;
+
+  // Verify Google ID token via Google's tokeninfo endpoint (no extra library needed)
+  let googlePayload;
+  try {
+    const verifyRes = await fetch(
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`,
+    );
+    if (!verifyRes.ok) {
+      return next(new AuthenticationError('Token Google tidak valid'));
+    }
+    googlePayload = await verifyRes.json();
+  } catch {
+    return next(new AuthenticationError('Gagal memverifikasi token Google'));
+  }
+
+  // Validate that the token was issued for our app
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  if (clientId && googlePayload.aud !== clientId) {
+    return next(new AuthenticationError('Token Google tidak valid untuk aplikasi ini'));
+  }
+
+  const { sub: googleId, email, name: fullname, picture } = googlePayload;
+
+  if (!googleId || !email) {
+    return next(new AuthenticationError('Data akun Google tidak lengkap'));
+  }
+
+  // Find or create user
+  const userId = await UserRepositories.findOrCreateGoogleUser({
+    googleId,
+    email,
+    fullname: fullname || email.split('@')[0],
+    picture: picture || null,
+  });
+
+  // Generate tokens
+  const accessToken = TokenManager.generateAccessToken({ id: userId });
+  const refreshToken = TokenManager.generateRefreshToken({ id: userId });
+
+  const id = `auth-${nanoid(16)}`;
+  const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
+  const createdAt = new Date().toISOString();
+  const expiresAtDate = new Date();
+  expiresAtDate.setDate(expiresAtDate.getDate() + 7);
+  const expiresAt = expiresAtDate.toISOString();
+
+  await AuthenticationRepositories.addRefreshToken(
+    id,
+    userId,
+    refreshToken,
+    deviceInfo,
+    expiresAt,
+    createdAt,
+  );
+
+  return response(res, 200, 'Login dengan Google berhasil', {
+    accessToken,
+    refreshToken,
+  });
+};
+
