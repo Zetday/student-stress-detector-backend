@@ -6,9 +6,109 @@ import getRangeFields from "./getRangeFields";
 function getBadgeByValue(value, fieldName, t) {
   const score = Number(value) || 0;
 
+  if (fieldName === "moodScore") {
+    if (score <= 3) {
+      return {
+        label: t.ActivityBadLabel || "Buruk",
+        badgeClass: "bg-red-500/20 text-red-400",
+      };
+    }
+    if (score <= 6) {
+      return {
+        label: t.ActivityBadgeMedium || "Sedang",
+        badgeClass: "bg-yellow-500/20 text-yellow-400",
+      };
+    }
+    if (score <= 8) {
+      return {
+        label: t.ActivityBadgeGood || "Baik",
+        badgeClass: "bg-green-500/20 text-green-400",
+      };
+    }
+    return {
+      label: t.ActivityBadgeVeryGood || "Sangat Baik",
+      badgeClass: "bg-cyan-500/20 text-cyan-400",
+    };
+  }
+
+  if (fieldName === "fatigueLevel") {
+    if (score <= 3) {
+      return {
+        label: t.ActivityFreshLabel || "Segar",
+        badgeClass: "bg-green-500/20 text-green-400",
+      };
+    }
+    if (score <= 6) {
+      return {
+        label: t.ActivityBadgeMedium || "Sedang",
+        badgeClass: "bg-yellow-500/20 text-yellow-400",
+      };
+    }
+    if (score <= 8) {
+      return {
+        label: t.ActivityBadgeQuiteHigh || "Cukup Tinggi",
+        badgeClass: "bg-orange-500/20 text-orange-400",
+      };
+    }
+    return {
+      label: t.ActivityExhaustedLabel || "Kelelahan Total",
+      badgeClass: "bg-red-500/20 text-red-400",
+    };
+  }
+
+  if (fieldName === "deadlinePressure") {
+    if (score <= 3) {
+      return {
+        label: t.ActivityRelaxedLabel || "Santai",
+        badgeClass: "bg-green-500/20 text-green-400",
+      };
+    }
+    if (score <= 6) {
+      return {
+        label: t.ActivityBadgeMedium || "Sedang",
+        badgeClass: "bg-yellow-500/20 text-yellow-400",
+      };
+    }
+    if (score <= 8) {
+      return {
+        label: t.ActivityBadgeQuiteHigh || "Cukup Tinggi",
+        badgeClass: "bg-orange-500/20 text-orange-400",
+      };
+    }
+    return {
+      label: t.ActivityUrgentLabel || "Mendesak",
+      badgeClass: "bg-red-500/20 text-red-400",
+    };
+  }
+
+  if (fieldName === "assignmentLoad") {
+    if (score <= 3) {
+      return {
+        label: t.ActivityBadgeLow || "Rendah",
+        badgeClass: "bg-green-500/20 text-green-400",
+      };
+    }
+    if (score <= 6) {
+      return {
+        label: t.ActivityBadgeMedium || "Sedang",
+        badgeClass: "bg-yellow-500/20 text-yellow-400",
+      };
+    }
+    if (score <= 8) {
+      return {
+        label: t.ActivityBadgeQuiteHigh || "Cukup Tinggi",
+        badgeClass: "bg-orange-500/20 text-orange-400",
+      };
+    }
+    return {
+      label: t.ActivityExtremeLabel || "Ekstrem",
+      badgeClass: "bg-red-500/20 text-red-400",
+    };
+  }
+
   if (score <= 3) {
     return {
-      label: fieldName === "moodScore" ? t.ActivityBadgeGood : t.ActivityBadgeLow,
+      label: t.ActivityBadgeLow,
       badgeClass: "bg-green-500/20 text-green-400",
     };
   }
@@ -28,8 +128,8 @@ function getBadgeByValue(value, fieldName, t) {
   }
 
   return {
-    label: fieldName === "moodScore" ? t.ActivityBadgeVeryGood : t.ActivityBadgeVeryHigh,
-    badgeClass: "bg-cyan-500/20 text-cyan-400",
+    label: t.ActivityBadgeVeryHigh,
+    badgeClass: "bg-red-500/20 text-red-400",
   };
 }
 

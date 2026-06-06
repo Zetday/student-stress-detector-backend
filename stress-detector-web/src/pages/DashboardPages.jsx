@@ -405,7 +405,7 @@ function DashboardPage() {
             </button>
           </div>
 
-          <div className="pt-6 border-t border-[var(--border-soft)] grid grid-cols-2 md:grid-cols-4 gap-4 text-left max-w-2xl mx-auto">
+          <div className="pt-6 border-t border-(--border-soft) grid grid-cols-2 md:grid-cols-4 gap-4 text-left max-w-2xl mx-auto">
             <div className="space-y-1">
               <p className="text-xs font-semibold theme-muted uppercase tracking-wider">📊 Pantau Stres</p>
               <p className="text-[11px] theme-subtle">Kalkulasi skor stres berkala.</p>

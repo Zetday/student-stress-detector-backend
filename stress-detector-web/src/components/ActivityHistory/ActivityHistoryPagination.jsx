@@ -24,8 +24,8 @@ function ActivityHistoryPagination({ currentPage, totalPages, from, to, total, o
             onClick={() => onPageChange(page)}
             className={`rounded-full border px-3 py-2 text-sm font-semibold transition ${
               currentPage === page
-                ? "border-blue-400 bg-blue-500/10 text-blue-200"
-                : "theme-card-muted theme-muted hover:border-blue-400 hover:text-[var(--text)]"
+                ? "border-blue-400 bg-blue-500/10 text-blue-600 dark:text-blue-200"
+                : "theme-card-muted theme-muted hover:border-blue-400 hover:text-(--text)"
             }`}
           >
             {page}

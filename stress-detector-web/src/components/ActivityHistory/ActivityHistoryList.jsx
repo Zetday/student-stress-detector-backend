@@ -2,9 +2,9 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 
 const statusBadge = {
-  Selesai: "bg-emerald-500/15 text-emerald-300",
-  Draft: "bg-amber-500/15 text-amber-300",
-  Terlambat: "bg-red-500/15 text-red-300",
+  Selesai: "bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+  Draft: "bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300",
+  Terlambat: "bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300",
 };
 
 const statusTranslationKey = {
@@ -22,12 +22,12 @@ const scoreLabelTranslationKey = {
 
 const scoreColor = (score) => {
   if (score >= 70) {
-    return "text-red-300";
+    return "text-red-600 dark:text-red-300";
   }
   if (score >= 40) {
-    return "text-sky-300";
+    return "text-sky-600 dark:text-sky-300";
   }
-  return "text-emerald-300";
+  return "text-emerald-600 dark:text-emerald-300";
 };
 
 function formatDate(date, locale) {
@@ -88,7 +88,7 @@ function ActivityHistoryList({ errorMessage = "", isLoading = false, items, t })
         <div>{t.ActivityHistoryTableAction}</div>
       </div>
 
-      <div className="divide-y divide-[var(--border)]">
+      <div className="divide-y divide-(--border)">
         {isLoading && (
           <div className="px-5 py-10 text-center theme-muted">
             {t.ActivityHistoryLoading}
@@ -138,7 +138,7 @@ function ActivityHistoryList({ errorMessage = "", isLoading = false, items, t })
               ) : (
                 <button
                   onClick={() => handleActionClick(item)}
-                  className="theme-card-muted rounded-full border px-4 py-2 text-sm font-semibold text-blue-400 transition hover:border-blue-400 hover:text-[var(--text)]"
+                  className="theme-card-muted rounded-full border px-4 py-2 text-sm font-semibold text-blue-400 transition hover:border-blue-400 hover:text-(--text)"
                 >
                   {item.status === "Draft" ? t.ActivityHistoryContinueWriting : t.ActivityHistoryViewDetail}
                 </button>
