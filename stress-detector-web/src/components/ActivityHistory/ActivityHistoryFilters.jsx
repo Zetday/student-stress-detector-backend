@@ -1,5 +1,4 @@
 import PropTypes from "prop-types";
-import calender from "../../assets/icons/calendar.svg"
 
 const getStatusOptions = (t) => [
   { value: "all", label: t.ActivityHistoryStatusAll },

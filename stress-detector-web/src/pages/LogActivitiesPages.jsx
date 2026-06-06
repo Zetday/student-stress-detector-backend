@@ -7,7 +7,7 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import { getActivityHistory } from "../services/activityService";
-import { getLocalDateString } from "../components/ActivityInput/activityFormConstants";
+import { getLocalDateString, getPastActivityDateOptions } from "../components/ActivityInput/activityFormConstants";
 
 function formatJournalDate(dateValue, locale) {
   if (!dateValue) {
@@ -34,7 +34,7 @@ function LogActivitiesPage() {
   const navigate = useNavigate();
   const activityId = id || null;
 
-  const [alreadyFilled, setAlreadyFilled] = useState(false);
+  const [historyData, setHistoryData] = useState([]);
   const [checkingToday, setCheckingToday] = useState(true);
 
   const {
@@ -56,28 +56,18 @@ function LogActivitiesPage() {
 
   const journalDate = formatJournalDate(form.activityDate, t.DashboardDateLocale);
 
+  // Fetch activity history on mount to check completed and draft statuses
   useEffect(() => {
     let isMounted = true;
-    const checkTodayActivity = async () => {
+    const fetchHistory = async () => {
       try {
         const response = await getActivityHistory();
         if (!isMounted) return;
-        if (response.error) {
-          setCheckingToday(false);
-          return;
-        }
-
-        const todayStr = getLocalDateString();
-        const hasTodayCompleted = (response.data || []).some(item => {
-          const itemDateStr = item.predictionDate ? String(item.predictionDate).slice(0, 10) : "";
-          return itemDateStr === todayStr && item.status === "Selesai";
-        });
-
-        if (hasTodayCompleted) {
-          setAlreadyFilled(true);
+        if (!response.error) {
+          setHistoryData(response.data || []);
         }
       } catch (err) {
-        console.error("Gagal memeriksa catatan hari ini:", err);
+        console.error("Gagal mengambil riwayat aktivitas:", err);
       } finally {
         if (isMounted) {
           setCheckingToday(false);
@@ -85,16 +75,28 @@ function LogActivitiesPage() {
       }
     };
 
-    if (!activityId) {
-      checkTodayActivity();
-    } else {
-      setCheckingToday(false);
-    }
+    fetchHistory();
 
     return () => {
       isMounted = false;
     };
-  }, [activityId]);
+  }, []);
+
+  // Find if there is an activity for the selected date (excluding the current activity if we are editing)
+  const selectedDateActivity = historyData.find(item => {
+    const itemDateStr = item.predictionDate ? String(item.predictionDate).slice(0, 10) : "";
+    return itemDateStr === form.activityDate && String(item.id) !== String(activityId);
+  });
+
+  const isCompleted = selectedDateActivity?.status === "Selesai";
+  const hasDraft = selectedDateActivity?.status === "Draft";
+
+  // If we are creating a new entry and selected date already has a draft, auto-redirect to edit it
+  useEffect(() => {
+    if (!activityId && hasDraft && selectedDateActivity?.id) {
+      navigate(`/LogActivity/${selectedDateActivity.id}`, { replace: true });
+    }
+  }, [activityId, hasDraft, selectedDateActivity, navigate]);
 
   return (
     <Layout title={t.LogActivityTitle} name={user.fullname} role={user.role}>
@@ -114,7 +116,7 @@ function LogActivitiesPage() {
 
         <div className="theme-card rounded-2xl border p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-4 w-full">
               {/* Icon */}
               <div className="theme-card-muted flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
                 <svg
@@ -134,13 +136,33 @@ function LogActivitiesPage() {
               </div>
 
               {/* Content */}
-              <div className="min-w-0">
-                <h3 className="theme-text text-xl font-semibold">
-                  {t.ActivityJournalHeader}
-                  <span className="ml-2 text-blue-300">
-                    {journalDate}
-                  </span>
-                </h3>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="theme-text text-xl font-semibold">
+                    {t.ActivityJournalHeader}
+                  </h3>
+                  
+                  {activityId ? (
+                    // If editing, date is read-only
+                    <span className="text-xl font-semibold text-blue-300">
+                      {journalDate}
+                    </span>
+                  ) : (
+                    // If creating, allow selecting a date (today or 3 days back)
+                    <select
+                      name="activityDate"
+                      value={form.activityDate}
+                      onChange={handleChange}
+                      className="theme-input h-10 rounded-xl border px-3 text-sm font-semibold text-blue-400 outline-none transition focus:border-blue-400"
+                    >
+                      {getPastActivityDateOptions(new Date(), 4).map((option) => (
+                        <option key={option.value} value={option.value} className="theme-text bg-(--bg-card)">
+                          {formatJournalDate(option.value, t.DashboardDateLocale)}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
 
                 <p className="theme-muted mt-1 text-sm">
                   {t.ActivityJournalDescription}
@@ -152,7 +174,7 @@ function LogActivitiesPage() {
 
         {checkingToday ? (
           <div className="text-center py-10 theme-muted">Memeriksa catatan hari ini...</div>
-        ) : alreadyFilled ? (
+        ) : isCompleted ? (
           <div className="theme-card rounded-2xl border border-blue-500/30 bg-blue-500/5 p-8 text-center max-w-2xl mx-auto space-y-6">
             <div className="flex justify-center">
               <div className="w-16 h-16 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
@@ -175,10 +197,10 @@ function LogActivitiesPage() {
             
             <div className="space-y-2">
               <h3 className="theme-text text-2xl font-bold">
-                Jurnal Hari Ini Sudah Terisi
+                {form.activityDate === getLocalDateString() ? "Jurnal Hari Ini Sudah Terisi" : "Jurnal Tanggal Ini Sudah Terisi"}
               </h3>
               <p className="theme-muted text-sm leading-relaxed">
-                Anda sudah mengirimkan catatan aktivitas untuk hari ini ({journalDate}). Anda dapat melihat hasil analisis stres di dashboard atau melihat riwayat jurnal Anda.
+                Anda sudah mengirimkan catatan aktivitas untuk tanggal ini ({journalDate}). Anda dapat melihat hasil analisis stres di dashboard atau melihat riwayat jurnal Anda.
               </p>
             </div>
 
