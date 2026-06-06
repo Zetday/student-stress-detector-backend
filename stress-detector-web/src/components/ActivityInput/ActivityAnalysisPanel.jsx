@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 function getStressLabel(stressLevel, t) {
   const normalizedLevel = String(stressLevel || "").toLowerCase();
@@ -59,6 +60,8 @@ function normalizeStressScore(score) {
 }
 
 function ActivityAnalysisPanel({ isLoading = false, prediction = null, t, visible = true, onClose }) {
+  const navigate = useNavigate();
+
   if (!visible) {
     return null;
   }
@@ -131,6 +134,26 @@ function ActivityAnalysisPanel({ isLoading = false, prediction = null, t, visibl
                     {predictionSummary}
                   </p>
                 )}
+
+                <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:justify-center">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-5 py-2.5 rounded-xl border border-white/20 text-white hover:bg-white/10 transition text-sm font-semibold cursor-pointer"
+                  >
+                    {t.ActivityCloseButton || "Tutup"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      navigate("/summary");
+                    }}
+                    className="px-5 py-2.5 rounded-xl bg-white text-slate-950 hover:bg-white/90 transition text-sm font-bold shadow-md cursor-pointer"
+                  >
+                    {t.ActivityGoToSummaryButton || "Ke Halaman Ringkasan"}
+                  </button>
+                </div>
               </>
             )}
           </div>

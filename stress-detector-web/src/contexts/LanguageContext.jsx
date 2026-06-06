@@ -150,6 +150,8 @@ const translations = {
     ActivityTodayStatusTitle: "Status Hari Ini",
     ActivityAnalysisTag: "Analisis",
     ActivityStressRiskHigh: "Risiko Stres Tinggi",
+    ActivityGoToSummaryButton: "Ke Halaman Ringkasan",
+    ActivityCloseButton: "Tutup",
 
     // Dashboard Pages
     HighestStressScoreTitle: "Stress Score Tertinggi",
@@ -431,6 +433,8 @@ const translations = {
     ActivityTodayStatusTitle: "Today's Status",
     ActivityAnalysisTag: "Analysis",
     ActivityStressRiskHigh: "High Stress Risk",
+    ActivityGoToSummaryButton: "Go to Summary",
+    ActivityCloseButton: "Close",
 
     // Dashboard Page
     DashboardGreeting: "Good Morning, ",
