@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import response from '../../../utils/response.js';
 import WeeklySummaryRepositories from '../repositories/summary-repositories.js';
 
