@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { createActivity, updateActivity, getActivityById, getActivityHistory } from "../../services/activityService";
-import { activityNumberFields, createInitialActivityForm } from "./activityFormConstants";
+import { activityNumberFields, createInitialActivityForm, getLocalDateString } from "./activityFormConstants";
 import buildActivityPayload, { activityHasInput } from "./buildActivityPayload";
 
 const DRAFT_KEY = "activityDraft";
@@ -95,7 +95,7 @@ function useActivityForm(t, initialData = null, activityId = null, options = {})
           const act = result.data;
           setForm({
             ...createInitialActivityForm(),
-            activityDate: act.activity_date ? String(act.activity_date).slice(0, 10) : "",
+            activityDate: act.activity_date ? getLocalDateString(new Date(act.activity_date)) : "",
             sleepHours: getWholeNonNegativeValue(act.sleep_hours),
             studyHours: getWholeNonNegativeValue(act.study_hours),
             screenTimeHours: getWholeNonNegativeValue(act.screen_time_hours),

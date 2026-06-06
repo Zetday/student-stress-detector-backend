@@ -84,7 +84,10 @@ function LogActivitiesPage() {
 
   // Find if there is an activity for the selected date (excluding the current activity if we are editing)
   const selectedDateActivity = historyData.find(item => {
-    const itemDateStr = item.predictionDate ? String(item.predictionDate).slice(0, 10) : "";
+    if (!item.predictionDate) return false;
+    const dateObj = new Date(item.predictionDate);
+    if (Number.isNaN(dateObj.getTime())) return false;
+    const itemDateStr = getLocalDateString(dateObj);
     return itemDateStr === form.activityDate && String(item.id) !== String(activityId);
   });
 
@@ -155,14 +158,11 @@ function LogActivitiesPage() {
                       {getPastActivityDateOptions(new Date(), 3).map((option, idx) => {
                         const isSelected = form.activityDate === option.value;
                         const isIndonesian = t.DashboardDateLocale === "id-ID";
-                        let relativeLabel = "";
-                        if (idx === 0) {
-                          relativeLabel = isIndonesian ? "Hari Ini" : "Today";
-                        } else if (idx === 1) {
-                          relativeLabel = isIndonesian ? "Kemarin" : "Yesterday";
-                        } else {
-                          relativeLabel = isIndonesian ? "2 Hari Lalu" : "2 Days Ago";
-                        }
+                        const relativeLabel = idx === 0
+                          ? (isIndonesian ? "Hari Ini" : "Today")
+                          : idx === 1
+                          ? (isIndonesian ? "Kemarin" : "Yesterday")
+                          : (isIndonesian ? "2 Hari Lalu" : "2 Days Ago");
                         
                         const dateObj = option.date;
                         const locale = t.DashboardDateLocale || "id-ID";
