@@ -6,10 +6,9 @@ info:
     
     **Flow:**
     1. Register → Login → get `accessToken`
-    2. `POST /activities` → triggers ML prediction automatically
+    2. `POST /activities` (or `PUT /activities/{id}`) → triggers ML prediction automatically. If 7 days of activities in the current ISO week are completed, automatically generates the weekly summary, insights, and recommendations.
     3. `GET /predictions/latest` → view today's stress level
-    4. `POST /weekly-summaries/generate` → aggregate the week + get AI insight
-    5. `GET /dashboard` → aggregated view for the frontend dashboard
+    4. `GET /dashboard` → aggregated view for the frontend dashboard
     
     **Auth:** All protected endpoints require `Authorization: Bearer <accessToken>`
   version: 1.0.0
@@ -469,7 +468,7 @@ paths:
   # ─── ACTIVITIES ───────────────────────────────────────────────────────────
   /activities:
     post:
-      summary: Submit daily activity (auto-triggers ML prediction)
+      summary: Submit daily activity (auto-triggers ML prediction and weekly summary generation if 7 days are complete)
       tags: [Activities]
       requestBody:
         required: true
@@ -575,7 +574,7 @@ paths:
           description: Activity not found
 
     put:
-      summary: Update a daily activity (triggers ML re-prediction)
+      summary: Update a daily activity (triggers ML re-prediction and weekly summary generation if 7 days are complete)
       tags: [Activities]
       parameters:
         - in: path
@@ -733,40 +732,6 @@ paths:
       responses:
         '200':
           description: Latest weekly summary retrieved
-
-  /weekly-summaries/generate:
-    post:
-      summary: >
-        Generate this week's summary + AI insight + recommendation.
-        Aggregates daily_activities & stress_predictions for the current ISO week,
-        calls the ML service, and saves the result.
-      tags: [Weekly Summaries]
-      responses:
-        '201':
-          description: Weekly summary generated
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: object
-                        properties:
-                          summary:
-                            $ref: '#/components/schemas/WeeklySummary'
-                          insight:
-                            $ref: '#/components/schemas/Insight'
-                          recommendation:
-                            $ref: '#/components/schemas/Recommendation'
-                          recommendations:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/Recommendation'
-                          mlAvailable: { type: boolean }
-        '400':
-          description: No activity data found for this week
 
   # ─── INSIGHTS ─────────────────────────────────────────────────────────────
   /insights:

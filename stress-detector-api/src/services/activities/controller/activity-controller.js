@@ -7,6 +7,7 @@ import {
 } from '../../../exceptions/index.js';
 import ActivityRepositories from '../repositories/activity-repositories.js';
 import PredictionRepositories from '../../predictions/repositories/prediction-repositories.js';
+import WeeklySummaryRepositories from '../../summaries/repositories/summary-repositories.js';
 import { predictStress } from '../../../ai/ml-client.js';
 
 export const createActivity = async (req, res, next) => {
@@ -90,6 +91,18 @@ export const createActivity = async (req, res, next) => {
       confidenceScore: mlResult.confidence_score || null,
       modelVersion: mlResult.model_version || null,
     });
+  }
+
+  // 4. Automatically generate weekly summary if 7 days of activities are completed
+  if (activityStatus === 'submitted') {
+    try {
+      const summaryResult = await WeeklySummaryRepositories.generateWeeklySummaryInternal(userId, activityDate);
+      if (summaryResult.success) {
+        console.log(`[Info] Weekly summary automatically generated for user ${userId} for date ${activityDate}`);
+      }
+    } catch (err) {
+      console.error(`[Warning] Failed to automatically generate weekly summary: ${err.message}`);
+    }
   }
 
   return response(res, 201, 'Aktivitas berhasil ditambahkan', {
@@ -257,6 +270,18 @@ export const updateActivity = async (req, res, next) => {
         confidenceScore: mlResult.confidence_score || null,
         modelVersion: mlResult.model_version || null,
       });
+    }
+  }
+
+  // 5. Automatically generate weekly summary if 7 days of activities are completed
+  if (activityStatus === 'submitted') {
+    try {
+      const summaryResult = await WeeklySummaryRepositories.generateWeeklySummaryInternal(userId, activityDate);
+      if (summaryResult.success) {
+        console.log(`[Info] Weekly summary automatically generated for user ${userId} for date ${activityDate}`);
+      }
+    } catch (err) {
+      console.error(`[Warning] Failed to automatically generate weekly summary: ${err.message}`);
     }
   }
 

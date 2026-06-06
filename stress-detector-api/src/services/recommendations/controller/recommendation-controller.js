@@ -1,6 +1,7 @@
 import response from '../../../utils/response.js';
 import { NotFoundError } from '../../../exceptions/index.js';
 import RecommendationRepositories from '../repositories/recommendation-repositories.js';
+import WeeklySummaryRepositories from '../../summaries/repositories/summary-repositories.js';
 
 export const getRecommendations = async (req, res) => {
   const { id: userId } = req.user;
@@ -20,6 +21,13 @@ export const getRecommendations = async (req, res) => {
 
 export const getLatestRecommendation = async (req, res) => {
   const { id: userId } = req.user;
+
+  try {
+    const todayStr = new Date().toISOString().split('T')[0];
+    await WeeklySummaryRepositories.generateWeeklySummaryInternal(userId, todayStr);
+  } catch (err) {
+    console.error(`[Warning] Auto-generation on GET latest recommendation failed: ${err.message}`);
+  }
 
   const recommendation = await RecommendationRepositories.getLatestRecommendation(userId);
 

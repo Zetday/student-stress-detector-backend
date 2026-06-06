@@ -2065,194 +2065,7 @@
       "name": "Weekly Summaries",
       "item": [
         {
-          "name": "Generate Weekly Summary + AI Insight & Recommendations",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "pm.test(\"Summary is returned with required fields\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data.summary).to.exist;",
-                  "    const s = jsonData.data.summary;",
-                  "    pm.expect(s).to.have.property('id');",
-                  "    pm.expect(s).to.have.property('avg_stress_score');",
-                  "    pm.expect(s).to.have.property('dominant_stress_level');",
-                  "    pm.expect(s).to.have.property('stress_trend');",
-                  "    if (s.id) { pm.environment.set('summary_id', s.id); }",
-                  "});",
-                  "",
-                  "pm.test(\"AI insight returned from ML service\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data).to.have.property('insight');",
-                  "    if (jsonData.data.insight) {",
-                  "        pm.expect(jsonData.data.insight.insight_text).to.be.a('string');",
-                  "        pm.expect(jsonData.data.insight.insight_text).to.not.be.empty;",
-                  "        pm.expect(jsonData.data.insight.summary_id).to.exist;",
-                  "    }",
-                  "});",
-                  "",
-                  "pm.test(\"AI recommendation returned from ML service\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data).to.have.property('recommendation');",
-                  "    if (jsonData.data.recommendation) {",
-                  "        pm.expect(jsonData.data.recommendation.recommendation_text).to.be.a('string');",
-                  "        pm.expect(jsonData.data.recommendation.recommendation_text).to.not.be.empty;",
-                  "        pm.expect(jsonData.data.recommendation.summary_id).to.exist;",
-                  "    }",
-                  "});",
-                  "",
-                  "pm.test(\"AI recommendations array returned from ML service\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data).to.have.property('recommendations');",
-                  "    pm.expect(jsonData.data.recommendations).to.be.an('array');",
-                  "    pm.expect(jsonData.data.recommendations.length).to.be.at.least(1);",
-                  "    const firstRec = jsonData.data.recommendations[0];",
-                  "    pm.expect(firstRec.category).to.be.a('string');",
-                  "    pm.expect(firstRec.priority_level).to.be.a('string');",
-                  "    pm.expect(firstRec.title).to.be.a('string');",
-                  "    pm.expect(firstRec.recommendation_text).to.be.a('string');",
-                  "});",
-                  "",
-                  "pm.test(\"mlAvailable flag is present\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data).to.have.property('mlAvailable');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/weekly-summaries/generate",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "weekly-summaries",
-                "generate"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Generate Weekly Summary + AI Insight & Recommendations (Previous Week - Low Stress Pattern)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "pm.test(\"Summary is returned with low stress level\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data.summary).to.exist;",
-                  "    const s = jsonData.data.summary;",
-                  "    pm.expect(s.dominant_stress_level).to.eql('low');",
-                  "    if (s.id) { pm.environment.set('summary_prev_id', s.id); }",
-                  "});",
-                  "",
-                  "pm.test(\"AI insight and recommendations array returned for prev week\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data).to.have.property('insight');",
-                  "    pm.expect(jsonData.data.insight.insight_text).to.be.a('string');",
-                  "    pm.expect(jsonData.data).to.have.property('recommendations');",
-                  "    pm.expect(jsonData.data.recommendations).to.be.an('array');",
-                  "    pm.expect(jsonData.data.recommendations.length).to.be.at.least(1);",
-                  "    pm.expect(['low', 'medium', 'high', 'urgent']).to.include(jsonData.data.recommendations[0].priority_level);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/weekly-summaries/generate?date={{prev_date_day_1}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "weekly-summaries",
-                "generate"
-              ],
-              "query": [
-                {
-                  "key": "date",
-                  "value": "{{prev_date_day_1}}"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Generate Weekly Summary + AI Insight & Recommendations (Two Weeks Ago - High Stress Pattern)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "pm.test(\"Summary is returned with high stress level\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data.summary).to.exist;",
-                  "    const s = jsonData.data.summary;",
-                  "    pm.expect(s.dominant_stress_level).to.eql('high');",
-                  "    if (s.id) { pm.environment.set('summary_two_weeks_ago_id', s.id); }",
-                  "});",
-                  "",
-                  "pm.test(\"AI insight and recommendations array returned for high stress week\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data).to.have.property('insight');",
-                  "    pm.expect(jsonData.data.insight.insight_text).to.be.a('string');",
-                  "    pm.expect(jsonData.data).to.have.property('recommendations');",
-                  "    pm.expect(jsonData.data.recommendations).to.be.an('array');",
-                  "    pm.expect(jsonData.data.recommendations.length).to.be.at.least(1);",
-                  "    const hasUrgentOrHigh = jsonData.data.recommendations.some(r => ['high', 'urgent'].includes(r.priority_level.toLowerCase()));",
-                  "    pm.expect(hasUrgentOrHigh).to.be.true;",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/weekly-summaries/generate?date={{two_weeks_ago_date_day_1}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "weekly-summaries",
-                "generate"
-              ],
-              "query": [
-                {
-                  "key": "date",
-                  "value": "{{two_weeks_ago_date_day_1}}"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "List Weekly Summaries",
+          "name": "Verify Current Week Auto-Generated Summary",
           "event": [
             {
               "listen": "test",
@@ -2260,6 +2073,62 @@
                 "exec": [
                   "pm.test(\"Status code is 200\", function () {",
                   "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Verify weekly summary was automatically generated with 7 days\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.summary).to.exist;",
+                  "    const s = jsonData.data.summary;",
+                  "    pm.expect(s.days_count).to.eql(7);",
+                  "    pm.expect(s.summary_status).to.eql('generated');",
+                  "    if (s.id) { pm.environment.set('summary_id', s.id); }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/weekly-summaries/latest",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "weekly-summaries",
+                "latest"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List and Verify All Auto-Generated Summaries",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Verify all three summaries exist in the list\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const summaries = jsonData.data.summaries;",
+                  "    pm.expect(summaries).to.be.an('array');",
+                  "    pm.expect(summaries.length).to.be.at.least(3);",
+                  "    ",
+                  "    // Previous week should be index 1",
+                  "    const sPrev = summaries[1];",
+                  "    pm.expect(sPrev.dominant_stress_level).to.eql('low');",
+                  "    if (sPrev.id) { pm.environment.set('summary_prev_id', sPrev.id); }",
+                  "    ",
+                  "    // Two weeks ago should be index 2",
+                  "    const sTwoWeeks = summaries[2];",
+                  "    pm.expect(sTwoWeeks.dominant_stress_level).to.eql('high');",
+                  "    if (sTwoWeeks.id) { pm.environment.set('summary_two_weeks_ago_id', sTwoWeeks.id); }",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -2286,36 +2155,6 @@
                   "key": "offset",
                   "value": "0"
                 }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Get Latest Weekly Summary",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/weekly-summaries/latest",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "weekly-summaries",
-                "latest"
               ]
             }
           }
