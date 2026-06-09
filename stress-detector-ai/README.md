@@ -33,7 +33,7 @@
 
 ### 1. Masuk ke Direktori & Siapkan Virtual Environment
 ```bash
-cd stress-detector-ml
+cd stress-detector-ai
 python -m venv .venv
 ```
 
