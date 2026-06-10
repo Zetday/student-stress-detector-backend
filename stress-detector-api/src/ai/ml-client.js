@@ -9,29 +9,32 @@
  * request still succeeds (activity is saved; prediction is simply null).
  */
 
-let mlUrl = process.env.ML_SERVICE_URL || 'http://localhost:8000';
-if (mlUrl && !mlUrl.startsWith('http://') && !mlUrl.startsWith('https://')) {
-  mlUrl = `http://${mlUrl}`;
-}
-const ML_SERVICE_URL = mlUrl;
+const cleanUrl = (url, defaultUrl) => {
+  if (!url) return defaultUrl;
+  let cleaned = url.trim();
 
-const PREDICT_SERVICE_URL = process.env.PREDICT_SERVICE_URL
-  ? (process.env.PREDICT_SERVICE_URL.startsWith('http://') || process.env.PREDICT_SERVICE_URL.startsWith('https://')
-    ? process.env.PREDICT_SERVICE_URL
-    : `http://${process.env.PREDICT_SERVICE_URL}`)
-  : ML_SERVICE_URL;
+  // Remove surrounding single or double quotes
+  if ((cleaned.startsWith("'") && cleaned.endsWith("'")) || (cleaned.startsWith('"') && cleaned.endsWith('"'))) {
+    cleaned = cleaned.slice(1, -1).trim();
+  }
 
-const RECOMMENDATION_SERVICE_URL = process.env.RECOMMENDATION_SERVICE_URL
-  ? (process.env.RECOMMENDATION_SERVICE_URL.startsWith('http://') || process.env.RECOMMENDATION_SERVICE_URL.startsWith('https://')
-    ? process.env.RECOMMENDATION_SERVICE_URL
-    : `http://${process.env.RECOMMENDATION_SERVICE_URL}`)
-  : ML_SERVICE_URL;
+  // Remove trailing slashes
+  while (cleaned.endsWith('/')) {
+    cleaned = cleaned.slice(0, -1).trim();
+  }
 
-const INSIGHT_SERVICE_URL = process.env.INSIGHT_SERVICE_URL
-  ? (process.env.INSIGHT_SERVICE_URL.startsWith('http://') || process.env.INSIGHT_SERVICE_URL.startsWith('https://')
-    ? process.env.INSIGHT_SERVICE_URL
-    : `http://${process.env.INSIGHT_SERVICE_URL}`)
-  : ML_SERVICE_URL;
+  // Add protocol if missing
+  if (cleaned && !cleaned.startsWith('http://') && !cleaned.startsWith('https://')) {
+    cleaned = `http://${cleaned}`;
+  }
+
+  return cleaned;
+};
+
+const ML_SERVICE_URL = cleanUrl(process.env.ML_SERVICE_URL, 'http://localhost:8000');
+const PREDICT_SERVICE_URL = cleanUrl(process.env.PREDICT_SERVICE_URL, ML_SERVICE_URL);
+const RECOMMENDATION_SERVICE_URL = cleanUrl(process.env.RECOMMENDATION_SERVICE_URL, ML_SERVICE_URL);
+const INSIGHT_SERVICE_URL = cleanUrl(process.env.INSIGHT_SERVICE_URL, ML_SERVICE_URL);
 const ML_TIMEOUT_MS = 10_000; // 10 seconds
 
 /**
